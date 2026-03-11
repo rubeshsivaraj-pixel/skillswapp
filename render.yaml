@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: skillswapp
+    env: python
+    plan: free
+    buildCommand: "pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate"
+    startCommand: "gunicorn peer_skill_swap.wsgi"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.7
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        scope: runtime
+        sync: false
+
+databases:
+  - name: skillswapp_db
+    databaseName: skillswapp_db
+    user: skillswapp_user
+    region: singapore
+    plan: free
