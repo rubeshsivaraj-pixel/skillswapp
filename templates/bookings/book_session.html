@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Book Session | Peer Skill Swap{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6">
+        <div class="card p-5 shadow-sm border-0">
+            <h2 class="fw-bold mb-4 text-center">Book a Session</h2>
+            <p class="text-center text-muted mb-4">Request a session to learn <strong>{{ skill.name }}</strong> from <strong>{{ teacher.username }}</strong>.</p>
+            
+            <div class="alert alert-info text-center" role="alert">
+                <i class="bi bi-info-circle-fill"></i> You have <strong>{{ user.credits }}</strong> credits available. Booking and completing a session will cost <strong>1 credit</strong>.
+            </div>
+
+            <form method="post">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <div class="d-flex justify-content-between mt-4">
+                    <button type="submit" class="btn btn-primary fw-bold px-4">Send Booking Request</button>
+                    <a href="{% url 'skill_marketplace' %}" class="btn btn-outline-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

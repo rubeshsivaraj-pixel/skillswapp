@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}Confirm Removal | Peer Skill Swap{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6 text-center">
+        <div class="card p-5 shadow-sm border border-danger">
+            <h2 class="text-danger fw-bold mb-4">Are you sure?</h2>
+            <p class="lead">Do you really want to remove <strong>{{ user_skill.skill.name }}</strong> from your list of skills you want to {% if user_skill.skill_type == 'TEACH' %}teach{% else %}learn{% endif %}?</p>
+            
+            <form method="post" class="mt-4">
+                {% csrf_token %}
+                <div class="d-flex justify-content-center gap-3">
+                    <button type="submit" class="btn btn-danger fw-bold px-4">Yes, Remove Skill</button>
+                    <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary px-4">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

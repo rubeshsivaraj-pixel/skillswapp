@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard | Peer Skill Swap{% endblock %}
+
+{% block content %}
+<div class="row mb-5">
+    <div class="col-md-12">
+        <div class="d-flex align-items-center gap-3 mb-4">
+            <div style="font-size: 2.5rem; background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                <i class="bi bi-speedometer2"></i>
+            </div>
+            <h1 class="fw-bold mb-0">Your Dashboard</h1>
+        </div>
+        <hr>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Skills Management -->
+    <div class="col-lg-4">
+        <div class="card p-4 h-100 border-0" style="border-left: 4px solid var(--primary-color);">
+            <div class="d-flex align-items-center gap-2 mb-4">
+                <div style="font-size: 1.5rem; color: var(--primary-color);">
+                    <i class="bi bi-gear"></i>
+                </div>
+                <h4 class="fw-bold mb-0">My Skills</h4>
+            </div>
+            
+            <h6 class="text-success fw-bold d-flex align-items-center gap-2">
+                <i class="bi bi-star-fill"></i> I can teach:
+            </h6>
+            {% if teaching_skills %}
+                <div class="mb-3">
+                    {% for ts in teaching_skills %}
+                    <div class="badge bg-success mb-2" style="font-size: 0.9rem; padding: 0.6rem 0.9rem;">
+                        {{ ts.skill.name }}
+                        <a href="{% url 'remove_skill' ts.id %}" class="badge bg-light text-danger ms-2" style="cursor: pointer; text-decoration: none;">
+                            <i class="bi bi-x"></i>
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-muted small mb-3">No skills added yet</p>
+            {% endif %}
+
+            <h6 class="text-primary fw-bold d-flex align-items-center gap-2 mt-4">
+                <i class="bi bi-book"></i> I want to learn:
+            </h6>
+            {% if learning_skills %}
+                <div class="mb-4">
+                    {% for ls in learning_skills %}
+                    <div class="badge bg-primary mb-2" style="font-size: 0.9rem; padding: 0.6rem 0.9rem;">
+                        {{ ls.skill.name }}
+                        <a href="{% url 'remove_skill' ls.id %}" class="badge bg-light text-danger ms-2" style="cursor: pointer; text-decoration: none;">
+                            <i class="bi bi-x"></i>
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-muted small mb-4">No learning interests yet</p>
+            {% endif %}
+            
+            <div class="mt-auto">
+                <a href="{% url 'add_skill' %}" class="btn btn-primary w-100 fw-bold mt-3">
+                    <i class="bi bi-plus-circle"></i> Add New Skill
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Suggested Matches -->
+    <div class="col-lg-8">
+        <div class="card p-4 h-100 border-0" style="border-left: 4px solid var(--success-color);">
+            <div class="d-flex align-items-center gap-2 mb-4">
+                <div style="font-size: 1.5rem; color: var(--success-color);">
+                    <i class="bi bi-heart-handshake"></i>
+                </div>
+                <h4 class="fw-bold mb-0">Suggested Matches</h4>
+            </div>
+            <p class="text-muted mb-4 border-bottom pb-3">Based on the skills you want to learn, here are users who can teach them!</p>
+
+            {% if matched_users %}
+                <div class="row row-cols-1 row-cols-lg-2 g-3">
+                    {% for matched_user, skills_list in matched_users.items %}
+                        <div class="col">
+                            <div class="card border-0 shadow-sm h-100 transition" style="border-top: 3px solid var(--primary-color);">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center gap-2 mb-3">
+                                        <div style="width: 40px; height: 40px; background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
+                                            {{ matched_user.username|first|upper }}
+                                        </div>
+                                        <h5 class="card-title fw-bold mb-0">{{ matched_user.username }}</h5>
+                                    </div>
+                                    <p class="small text-muted mb-3">
+                                        <strong>Can teach:</strong> <br>
+                                        {% for s in skills_list %}
+                                            <span class="badge bg-light text-primary me-1 mb-1">{{ s.name }}</span>
+                                        {% endfor %}
+                                    </p>
+                                    
+                                    <div class="d-flex justify-content-between gap-2 mt-3">
+                                        <a href="{% url 'chat' matched_user.username %}" class="btn btn-sm btn-outline-primary flex-grow-1 fw-bold">
+                                            <i class="bi bi-chat"></i> Message
+                                        </a>
+                                        {% with first_skill=skills_list.0 %}
+                                            <a href="{% url 'book_session' matched_user.username first_skill.id %}" class="btn btn-sm btn-custom text-white flex-grow-1 fw-bold">
+                                                <i class="bi bi-calendar"></i> Book
+                                            </a>
+                                        {% endwith %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-light text-center py-5 border-2 border-secondary">
+                    <div style="font-size: 2.5rem; color: var(--text-muted); margin-bottom: 1rem;">
+                        <i class="bi bi-inbox"></i>
+                    </div>
+                    <p class="mb-0 text-muted">No matches found yet. <a href="{% url 'skill_marketplace' %}" class="fw-bold text-decoration-none">Browse the Marketplace</a> or add more skills!</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

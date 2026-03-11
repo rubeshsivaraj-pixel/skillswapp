@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Chat with {{ other_user.username }} | Peer Skill Swap{% endblock %}
+
+{% block content %}
+<div class="row mb-5 mt-4">
+    <div class="col-md-8 mx-auto">
+        <div class="card shadow-sm border-0 d-flex flex-column" style="height: 70vh;">
+            <div class="card-header bg-dark text-white py-3 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fw-bold"><i class="bi bi-person-circle"></i> {{ other_user.username }}</h5>
+                <a href="{% url 'profile' other_user.username %}" class="btn btn-sm btn-outline-light">View Profile</a>
+            </div>
+            
+            <div class="card-body overflow-auto d-flex flex-column gap-3 p-4 bg-light" id="chat-box">
+                {% for message in messages %}
+                    {% if message.sender == user %}
+                        <div class="align-self-end text-end ms-5">
+                            <div class="bg-primary text-white p-3 rounded-4 rounded-bottom-end-0 shadow-sm d-inline-block text-start mb-1">
+                                {{ message.content }}
+                            </div>
+                            <div class="small text-muted">{{ message.timestamp|time:"H:i" }}</div>
+                        </div>
+                    {% else %}
+                        <div class="align-self-start text-start me-5">
+                            <div class="bg-white text-dark p-3 rounded-4 rounded-bottom-start-0 shadow-sm border d-inline-block mb-1">
+                                {{ message.content }}
+                            </div>
+                            <div class="small text-muted">{{ message.timestamp|time:"H:i" }}</div>
+                        </div>
+                    {% endif %}
+                {% empty %}
+                    <div class="text-center text-muted my-auto">
+                        <p class="mb-0">Say hi to start a conversation with <strong>{{ other_user.username }}</strong>!</p>
+                    </div>
+                {% endfor %}
+            </div>
+            
+            <div class="card-footer bg-white p-3 border-top-0 border-top">
+                <form method="post" class="d-flex align-items-center gap-2">
+                    {% csrf_token %}
+                    <div class="flex-grow-1">
+                        {{ form.content }}
+                    </div>
+                    <button type="submit" class="btn btn-primary h-100 px-4 rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; flex-shrink: 0;"><i class="bi bi-send-fill"></i></button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Scroll to the bottom of the chat box automatically
+    var chatBox = document.getElementById("chat-box");
+    chatBox.scrollTop = chatBox.scrollHeight;
+</script>
+{% endblock %}

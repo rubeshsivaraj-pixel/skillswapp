@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}Peer Skill Swap - Learn & Teach for Free{% endblock %}
+
+{% block content %}
+<div class="hero text-center rounded-4 mb-5 position-relative">
+    <div class="position-relative z-3">
+        <h1 class="display-3 fw-bold mb-3">Swap Skills, Not Cash</h1>
+        <p class="lead mb-4 fs-5">Learn what you want, teach what you know. Join a community of passionate learners and educators.</p>
+        <div class="d-flex gap-3 justify-content-center flex-wrap">
+            <a href="{% url 'register' %}" class="btn btn-custom btn-lg px-5">
+                <i class="bi bi-rocket-takeoff"></i> Join the Community
+            </a>
+            <a href="{% url 'login' %}" class="btn btn-outline-light btn-lg px-5">
+                <i class="bi bi-box-arrow-in-right"></i> Log In
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mt-2 mb-5">
+    <div class="col-lg-4 col-md-6">
+        <div class="card h-100 border-0 shadow-gradient" style="border-top: 3px solid var(--primary-color);">
+            <div class="card-body text-center p-5">
+                <div class="display-4 mb-3 text-gradient">
+                    <i class="bi bi-lightbulb"></i>
+                </div>
+                <h3 class="fw-bold mb-3">List Your Skills</h3>
+                <p class="text-muted fs-5 mb-0">Tell us what you can teach and what you want to learn. Build your expertise profile.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 col-md-6">
+        <div class="card h-100 border-0 shadow-gradient" style="border-top: 3px solid var(--secondary-color);">
+            <div class="card-body text-center p-5">
+                <div class="display-4 mb-3 text-danger">
+                    <i class="bi bi-heart-handshake"></i>
+                </div>
+                <h3 class="fw-bold mb-3">Get Matched</h3>
+                <p class="text-muted fs-5 mb-0">Our smart algorithm connects you with people who want what you offer and offer what you need.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 col-md-6">
+        <div class="card h-100 border-0 shadow-gradient" style="border-top: 3px solid var(--success-color);">
+            <div class="card-body text-center p-5">
+                <div class="display-4 mb-3 text-success">
+                    <i class="bi bi-coin"></i>
+                </div>
+                <h3 class="fw-bold mb-3">Exchange Credits</h3>
+                <p class="text-muted fs-5 mb-0">Teach to earn credits. Spend credits to learn. Everyone wins in the skill economy!</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

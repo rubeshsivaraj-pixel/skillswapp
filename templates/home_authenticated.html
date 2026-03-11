@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row text-center mt-5">
+    <div class="col-md-8 mx-auto card p-5 shadow">
+        <h2 class="fw-bold">Welcome back, {{ user.username }}!</h2>
+        <p class="lead">You currently have <strong>{{ user.credits }}</strong> credits.</p>
+        <div class="d-flex justify-content-center gap-3 mt-4">
+            <a href="{% url 'dashboard' %}" class="btn btn-custom btn-lg">Go to Dashboard</a>
+            <a href="{% url 'skill_marketplace' %}" class="btn btn-outline-primary btn-lg">Browse Marketplace</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

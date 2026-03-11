@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Add Skill | Peer Skill Swap{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6">
+        <div class="card p-5 shadow-sm border-0">
+            <h2 class="fw-bold mb-4">Add a Skill</h2>
+            <p class="text-muted">Tell us what you can teach or what you want to learn. This helps us find the best matches for you.</p>
+
+            <form method="post">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <div class="d-flex justify-content-between mt-4">
+                    <button type="submit" class="btn btn-primary fw-bold px-4">Add Skill</button>
+                    <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">Back to Dashboard</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

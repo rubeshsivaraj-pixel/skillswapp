@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block title %}Skill Marketplace | Peer Skill Swap{% endblock %}
+
+{% block content %}
+<div class="row mb-5">
+    <div class="col-md-12">
+        <div class="text-center mt-4 mb-5">
+            <div style="font-size: 3rem; color: var(--primary-color); margin-bottom: 1rem;">
+                <i class="bi bi-shop"></i>
+            </div>
+            <h1 class="fw-bold display-5 mb-2">Skill Marketplace</h1>
+            <p class="lead text-muted fs-5">Discover what others are teaching and find the perfect match for your learning journey.</p>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-5">
+    {% regroup teaching_skills|dictsort:"skill.name" by skill as skill_groups %}
+
+    {% for skill_group in skill_groups %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0 position-relative overflow-hidden transition" style="border-top: 4px solid var(--primary-color);">
+                <div class="card-body p-0">
+                    <div style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%); color: white; padding: 2rem 1.5rem; text-align: center;">
+                        <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">
+                            <i class="bi bi-star"></i>
+                        </div>
+                        <h4 class="fw-bold mb-3">{{ skill_group.grouper.name }}</h4>
+                        <p class="mb-0 small" style="opacity: 0.95;">{{ skill_group.grouper.description|default:"A valuable skill to master." }}</p>
+                    </div>
+                    
+                    <div style="padding: 1.5rem;">
+                        <h6 class="fw-bold text-dark mb-3">
+                            <i class="bi bi-people-fill"></i> Users teaching this ({{ skill_group.list|length }})
+                        </h6>
+                        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                            {% for user_skill in skill_group.list %}
+                                <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded-3">
+                                    <div>
+                                        <div class="d-flex align-items-center gap-2 mb-1">
+                                            <div style="width: 32px; height: 32px; background: linear-gradient(135deg, var(--secondary-color) 0%, var(--primary-color) 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 0.9rem;">
+                                                {{ user_skill.user.username|first|upper }}
+                                            </div>
+                                            <span class="fw-bold text-dark">{{ user_skill.user.username }}</span>
+                                        </div>
+                                        <div class="small text-muted ms-4">
+                                            <i class="bi bi-lightning-fill"></i> {{ user_skill.proficiency|default:"Beginner to Advanced" }}
+                                        </div>
+                                    </div>
+                                    {% if user.is_authenticated and user != user_skill.user %}
+                                        <a href="{% url 'book_session' user_skill.user.username user_skill.skill.id %}" class="btn btn-sm btn-custom text-white fw-bold ms-2" style="white-space: nowrap;">
+                                            <i class="bi bi-calendar-check"></i> Request
+                                        </a>
+                                    {% elif not user.is_authenticated %}
+                                        <a href="{% url 'login' %}" class="btn btn-sm btn-outline-primary ms-2" style="white-space: nowrap;">Login to Request</a>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <div class="col-12">
+            <div class="alert alert-light text-center py-5 border-2 border-secondary rounded-4" style="background-color: #f8fafc;">
+                <div style="font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem;">
+                    <i class="bi bi-inbox"></i>
+                </div>
+                <p class="text-muted mb-0">No skills are currently being offered. <a href="{% url 'add_skill' %}" class="fw-bold text-decoration-none">Be the first to add a skill!</a></p>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Review Session | Peer Skill Swap{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6">
+        <div class="card p-5 shadow-sm border-0">
+            <h2 class="fw-bold mb-4 text-center">Review Session</h2>
+            <p class="text-center text-muted mb-4">Leave a review for your <strong>{{ session.skill.name }}</strong> session with <strong>{{ session.teacher.username }}</strong>.</p>
+            
+            <div class="alert alert-warning text-center" role="alert">
+                <i class="bi bi-star-fill"></i> Submitting this review will finalize the session and transfer <strong>1 credit</strong> from your account to <strong>{{ session.teacher.username }}</strong>.
+            </div>
+
+            <form method="post">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <div class="d-flex justify-content-between mt-4">
+                    <button type="submit" class="btn btn-warning fw-bold px-4 text-dark">Submit Review</button>
+                    <a href="{% url 'session_list' %}" class="btn btn-outline-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
