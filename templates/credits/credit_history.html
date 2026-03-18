@@ -1,0 +1,128 @@
+ {% extends 'base.html' %}
+{% block title %}Credit History - SkillSwap{% endblock %}
+
+{% block content %}
+<div class="container py-4" style="max-width:860px;">
+    <!-- Header with Balance -->
+    <div class="card border-0 shadow-sm mb-4" style="background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);">
+        <div class="card-body p-4 text-white">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h4 class="fw-bold mb-1"><i class="bi bi-coin me-2"></i>Your Credits</h4>
+                    <p class="mb-0 opacity-75">Earn credits by teaching sessions and uploading content</p>
+                </div>
+                <div class="col-auto text-end">
+                    <div style="font-size:3rem;font-weight:800;line-height:1;">{{ credit_balance }}</div>
+                    <div class="opacity-75 small">Current Balance</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- How to Earn Credits Info -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <h6 class="fw-bold mb-3"><i class="bi bi-info-circle me-2 text-primary"></i>How to Earn Credits</h6>
+            <div class="row g-3">
+                <div class="col-sm-6 col-md-3">
+                    <div class="text-center p-3 rounded-3 bg-success-subtle">
+                        <i class="bi bi-camera-video-fill text-success fs-3 mb-2 d-block"></i>
+                        <div class="fw-semibold">Upload Video</div>
+                        <div class="badge bg-success mt-1">+10 credits</div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-md-3">
+                    <div class="text-center p-3 rounded-3 bg-warning-subtle">
+                        <i class="bi bi-music-note-beamed text-warning fs-3 mb-2 d-block"></i>
+                        <div class="fw-semibold">Upload Audio</div>
+                        <div class="badge bg-warning text-dark mt-1">+5 credits</div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-md-3">
+                    <div class="text-center p-3 rounded-3 bg-primary-subtle">
+                        <i class="bi bi-mortarboard-fill text-primary fs-3 mb-2 d-block"></i>
+                        <div class="fw-semibold">Teach Session</div>
+                        <div class="badge bg-primary mt-1">+15 credits</div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-md-3">
+                    <div class="text-center p-3 rounded-3 bg-info-subtle">
+                        <i class="bi bi-people-fill text-info fs-3 mb-2 d-block"></i>
+                        <div class="fw-semibold">Help Learner</div>
+                        <div class="badge bg-info text-dark mt-1">+credits</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Transaction History -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white border-0 pt-3">
+            <h5 class="fw-bold mb-0"><i class="bi bi-clock-history me-2 text-secondary"></i>Transaction History</h5>
+        </div>
+        <div class="card-body p-0">
+            {% if transactions %}
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4">Type</th>
+                            <th>Description</th>
+                            <th>Amount</th>
+                            <th>Balance After</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for tx in transactions %}
+                        <tr>
+                            <td class="ps-4">
+                                {% if tx.transaction_type == 'UPLOAD_VIDEO' %}
+                                <span class="badge bg-success-subtle text-success"><i class="bi bi-camera-video me-1"></i>Video Upload</span>
+                                {% elif tx.transaction_type == 'UPLOAD_AUDIO' %}
+                                <span class="badge bg-warning-subtle text-warning"><i class="bi bi-music-note me-1"></i>Audio Upload</span>
+                                {% elif tx.transaction_type == 'TEACH_SESSION' %}
+                                <span class="badge bg-primary-subtle text-primary"><i class="bi bi-mortarboard me-1"></i>Taught</span>
+                                {% elif tx.transaction_type == 'HELP_LEARNER' %}
+                                <span class="badge bg-info-subtle text-info"><i class="bi bi-people me-1"></i>Helped</span>
+                                {% elif tx.transaction_type == 'BOOK_SESSION' %}
+                                <span class="badge bg-secondary-subtle text-secondary"><i class="bi bi-calendar me-1"></i>Booked</span>
+                                {% elif tx.transaction_type == 'REFERRAL' %}
+                                <span class="badge bg-success-subtle text-success"><i class="bi bi-person-plus me-1"></i>Referral</span>
+                                {% elif tx.transaction_type == 'ADMIN_AWARD' %}
+                                <span class="badge bg-danger-subtle text-danger"><i class="bi bi-award me-1"></i>Awarded</span>
+                                {% else %}
+                                <span class="badge bg-secondary-subtle text-secondary">{{ tx.get_transaction_type_display }}</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-muted small">{{ tx.description|default:tx.get_transaction_type_display }}</td>
+                            <td>
+                                {% if tx.amount > 0 %}
+                                <span class="text-success fw-semibold">+{{ tx.amount }}</span>
+                                {% else %}
+                                <span class="text-danger fw-semibold">{{ tx.amount }}</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-muted">{{ tx.balance_after }}</td>
+                            <td class="text-muted small">{{ tx.created_at|date:"M d, Y" }}<br><small>{{ tx.created_at|time:"h:i A" }}</small></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-coin fs-1 text-muted opacity-25"></i>
+                <h5 class="mt-3 text-muted">No transactions yet</h5>
+                <p class="text-muted small">Start earning credits by teaching sessions or uploading content.</p>
+                <div class="d-flex justify-content-center gap-2 mt-3">
+                    <a href="{% url 'upload_video' %}" class="btn btn-primary btn-sm"><i class="bi bi-camera-video me-1"></i>Upload Video</a>
+                    <a href="{% url 'upload_audio' %}" class="btn btn-outline-primary btn-sm"><i class="bi bi-music-note me-1"></i>Upload Audio</a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

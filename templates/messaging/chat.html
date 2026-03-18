@@ -1,48 +1,129 @@
 {% extends 'base.html' %}
-{% load crispy_forms_tags %}
 
-{% block title %}Chat with {{ other_user.username }} | Peer Skill Swap{% endblock %}
+{% block title %}Chat with {{ other_user.username }} - SkillSwap{% endblock %}
 
 {% block content %}
-<div class="row mb-5 mt-4">
-    <div class="col-md-8 mx-auto">
-        <div class="card shadow-sm border-0 d-flex flex-column" style="height: 70vh;">
-            <div class="card-header bg-dark text-white py-3 d-flex justify-content-between align-items-center">
-                <h5 class="mb-0 fw-bold"><i class="bi bi-person-circle"></i> {{ other_user.username }}</h5>
-                <a href="{% url 'profile' other_user.username %}" class="btn btn-sm btn-outline-light">View Profile</a>
+<div class="container-fluid h-100 p-0" style="max-height: calc(100vh - 60px);">
+    <div class="row g-0 h-100" style="min-height: calc(100vh - 60px);">
+
+        <!-- Sidebar: Conversations list -->
+        <div class="col-md-3 border-end d-none d-md-flex flex-column bg-white" style="max-height:calc(100vh - 60px);overflow-y:auto;">
+            <div class="p-3 border-bottom">
+                <h6 class="fw-bold mb-0"><i class="bi bi-chat-dots me-2 text-primary"></i>Messages</h6>
             </div>
-            
-            <div class="card-body overflow-auto d-flex flex-column gap-3 p-4 bg-light" id="chat-box">
-                {% for message in messages %}
-                    {% if message.sender == user %}
-                        <div class="align-self-end text-end ms-5">
-                            <div class="bg-primary text-white p-3 rounded-4 rounded-bottom-end-0 shadow-sm d-inline-block text-start mb-1">
-                                {{ message.content }}
-                            </div>
-                            <div class="small text-muted">{{ message.timestamp|time:"H:i" }}</div>
-                        </div>
+            {% for conv in conversations %}
+            <a href="{% url 'chat' conv.user.username %}" class="d-flex align-items-center gap-2 p-3 text-decoration-none border-bottom {% if conv.user.username == other_user.username %}bg-primary-subtle{% else %}text-dark{% endif %} sidebar-conv">
+                <div class="position-relative flex-shrink-0">
+                    {% if conv.user.profile_picture %}
+                    <img src="{{ conv.user.profile_picture.url }}" class="rounded-circle" width="42" height="42" style="object-fit:cover;">
                     {% else %}
-                        <div class="align-self-start text-start me-5">
-                            <div class="bg-white text-dark p-3 rounded-4 rounded-bottom-start-0 shadow-sm border d-inline-block mb-1">
-                                {{ message.content }}
-                            </div>
-                            <div class="small text-muted">{{ message.timestamp|time:"H:i" }}</div>
-                        </div>
+                    <div class="rounded-circle d-inline-flex align-items-center justify-content-center" style="width:42px;height:42px;background:linear-gradient(135deg,#667eea,#764ba2);">
+                        <span style="color:white;font-weight:bold;">{{ conv.user.username|first|upper }}</span>
+                    </div>
                     {% endif %}
-                {% empty %}
-                    <div class="text-center text-muted my-auto">
-                        <p class="mb-0">Say hi to start a conversation with <strong>{{ other_user.username }}</strong>!</p>
+                    {% if conv.user.is_online %}
+                    <span class="position-absolute bottom-0 end-0 bg-success border border-2 border-white rounded-circle" style="width:10px;height:10px;"></span>
+                    {% endif %}
+                </div>
+                <div class="flex-grow-1 min-w-0">
+                    <div class="d-flex justify-content-between">
+                        <span class="fw-semibold small">{{ conv.user.username }}</span>
+                        {% if conv.unread > 0 %}
+                        <span class="badge bg-primary rounded-pill" style="font-size:0.65em;">{{ conv.unread }}</span>
+                        {% endif %}
                     </div>
-                {% endfor %}
+                    <small class="text-muted text-truncate d-block" style="max-width:140px;">{{ conv.last_message.content|truncatechars:30 }}</small>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+
+        <!-- Main Chat Area -->
+        <div class="col-md-9 d-flex flex-column bg-light" style="max-height:calc(100vh - 60px);">
+            <!-- Chat Header -->
+            <div class="bg-white border-bottom p-3 d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-3">
+                    <a href="{% url 'inbox' %}" class="text-muted d-md-none me-1"><i class="bi bi-arrow-left"></i></a>
+                    {% if other_user.profile_picture %}
+                    <img src="{{ other_user.profile_picture.url }}" class="rounded-circle" width="44" height="44" style="object-fit:cover;">
+                    {% else %}
+                    <div class="rounded-circle d-inline-flex align-items-center justify-content-center" style="width:44px;height:44px;background:linear-gradient(135deg,#667eea,#764ba2);">
+                        <span style="color:white;font-size:1.1rem;font-weight:bold;">{{ other_user.username|first|upper }}</span>
+                    </div>
+                    {% endif %}
+                    <div>
+                        <div class="fw-bold">{{ other_user.username }}</div>
+                        <small class="text-muted">
+                            {% if other_user.is_online %}<span class="text-success"><i class="bi bi-circle-fill me-1" style="font-size:0.5em;"></i>Online</span>
+                            {% else %}Offline{% endif %}
+                        </small>
+                    </div>
+                </div>
+                <div class="d-flex gap-2">
+                    <!-- Jitsi Video Call Button -->
+                    <a href="{% url 'video_call' other_user.username %}" class="btn btn-sm btn-call" title="Video Call">
+                        <i class="bi bi-camera-video me-1"></i><span class="d-none d-sm-inline">Video Call</span>
+                    </a>
+                    <a href="{% url 'user_profile' other_user.username %}" class="btn btn-sm btn-outline-secondary" title="View Profile">
+                        <i class="bi bi-person me-1"></i><span class="d-none d-sm-inline">Profile</span>
+                    </a>
+                    {% if other_user.skills.filter.exists %}
+                    <a href="{% url 'book_session' other_user.username other_user.skills.first.skill.id %}" class="btn btn-sm btn-outline-primary" title="Book Session">
+                        <i class="bi bi-calendar-plus"></i>
+                    </a>
+                    {% endif %}
+                </div>
             </div>
-            
-            <div class="card-footer bg-white p-3 border-top-0 border-top">
-                <form method="post" class="d-flex align-items-center gap-2">
-                    {% csrf_token %}
-                    <div class="flex-grow-1">
-                        {{ form.content }}
+
+            <!-- Messages container -->
+            <div class="flex-grow-1 overflow-auto p-3 p-md-4" id="chat-box">
+                {% for msg in chat_messages %}
+                <div class="d-flex {% if msg.sender == request.user %}justify-content-end{% else %}justify-content-start{% endif %} mb-2" id="msg-{{ msg.id }}">
+                    {% if msg.sender != request.user %}
+                    <div class="flex-shrink-0 me-2 align-self-end">
+                        {% if msg.sender.profile_picture %}
+                        <img src="{{ msg.sender.profile_picture.url }}" class="rounded-circle" width="28" height="28" style="object-fit:cover;">
+                        {% else %}
+                        <div class="rounded-circle d-inline-flex align-items-center justify-content-center" style="width:28px;height:28px;background:linear-gradient(135deg,#667eea,#764ba2);font-size:0.7rem;color:white;font-weight:bold;">{{ msg.sender.username|first|upper }}</div>
+                        {% endif %}
                     </div>
-                    <button type="submit" class="btn btn-primary h-100 px-4 rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; flex-shrink: 0;"><i class="bi bi-send-fill"></i></button>
+                    {% endif %}
+                    <div style="max-width:70%;">
+                        <div class="{% if msg.sender == request.user %}bg-primary text-white{% else %}bg-white text-dark border{% endif %} rounded-3 px-3 py-2 shadow-sm" style="{% if msg.sender == request.user %}border-bottom-right-radius:0.25rem!important;{% else %}border-bottom-left-radius:0.25rem!important;{% endif %}">
+                            {{ msg.content }}
+                        </div>
+                        <div class="text-muted mt-1 {% if msg.sender == request.user %}text-end{% endif %}" style="font-size:0.7em;">
+                            {{ msg.timestamp|time:"H:i" }}
+                            {% if msg.sender == request.user and msg.is_read %}
+                            <i class="bi bi-check2-all text-primary ms-1"></i>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="text-center text-muted my-5">
+                    <i class="bi bi-chat-heart fs-1 opacity-25 d-block mb-3"></i>
+                    <p>Start the conversation with <strong>{{ other_user.username }}</strong>!</p>
+                </div>
+                {% endfor %}
+
+                <!-- Typing indicator (hidden by default) -->
+                <div id="typing-indicator" class="d-none d-flex align-items-center gap-2 mb-2">
+                    <div class="rounded-circle d-inline-flex align-items-center justify-content-center" style="width:28px;height:28px;background:linear-gradient(135deg,#667eea,#764ba2);font-size:0.7rem;color:white;font-weight:bold;">{{ other_user.username|first|upper }}</div>
+                    <div class="bg-white border rounded-3 px-3 py-2 shadow-sm">
+                        <span class="typing-dots"><span>.</span><span>.</span><span>.</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Message Input -->
+            <div class="bg-white border-top p-3">
+                <form id="chat-form" class="d-flex align-items-center gap-2">
+                    {% csrf_token %}
+                    <input type="text" id="message-input" class="form-control rounded-pill" placeholder="Type a message..." autocomplete="off" maxlength="2000">
+                    <button type="submit" class="btn btn-primary rounded-circle flex-shrink-0 d-flex align-items-center justify-content-center" style="width:44px;height:44px;" title="Send">
+                        <i class="bi bi-send-fill"></i>
+                    </button>
                 </form>
             </div>
         </div>
@@ -50,8 +131,129 @@
 </div>
 
 <script>
-    // Scroll to the bottom of the chat box automatically
-    var chatBox = document.getElementById("chat-box");
+const currentUser = "{{ request.user.username }}";
+const otherUser = "{{ other_user.username }}";
+const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+const chatBox = document.getElementById('chat-box');
+
+// Scroll to bottom
+function scrollToBottom() {
     chatBox.scrollTop = chatBox.scrollHeight;
+}
+scrollToBottom();
+
+// Try WebSocket, fall back to HTTP POST
+let socket = null;
+
+function connectWebSocket() {
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const wsUrl = `${protocol}//${window.location.host}/ws/chat/${otherUser}/`;
+
+    try {
+        socket = new WebSocket(wsUrl);
+
+        socket.onopen = function() {
+            console.log('WebSocket connected');
+        };
+
+        socket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            if (data.type === 'chat_message') {
+                appendMessage(data.message, data.sender, data.timestamp);
+            } else if (data.type === 'typing') {
+                showTyping(data.user);
+            }
+        };
+
+        socket.onerror = function() {
+            socket = null;  // Fall back to HTTP
+        };
+
+        socket.onclose = function() {
+            socket = null;
+        };
+    } catch(e) {
+        socket = null;
+    }
+}
+
+connectWebSocket();
+
+function appendMessage(content, sender, timestamp) {
+    const isOwn = sender === currentUser;
+    const time = timestamp ? new Date(timestamp).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+    const msgHtml = `
+        <div class="d-flex ${isOwn ? 'justify-content-end' : 'justify-content-start'} mb-2">
+            <div style="max-width:70%;">
+                <div class="${isOwn ? 'bg-primary text-white' : 'bg-white text-dark border'} rounded-3 px-3 py-2 shadow-sm">
+                    ${content}
+                </div>
+                <div class="text-muted mt-1 ${isOwn ? 'text-end' : ''}" style="font-size:0.7em;">${time}</div>
+            </div>
+        </div>`;
+    const indicator = document.getElementById('typing-indicator');
+    chatBox.insertBefore(createEl(msgHtml), indicator);
+    scrollToBottom();
+}
+
+function createEl(html) {
+    const d = document.createElement('div');
+    d.innerHTML = html.trim();
+    return d.firstChild;
+}
+
+let typingTimer;
+function showTyping(user) {
+    if (user !== currentUser) {
+        document.getElementById('typing-indicator').classList.remove('d-none');
+        clearTimeout(typingTimer);
+        typingTimer = setTimeout(() => {
+            document.getElementById('typing-indicator').classList.add('d-none');
+        }, 2000);
+    }
+}
+
+// Form submit
+document.getElementById('chat-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const input = document.getElementById('message-input');
+    const content = input.value.trim();
+    if (!content) return;
+
+    if (socket && socket.readyState === WebSocket.OPEN) {
+        socket.send(JSON.stringify({ type: 'chat_message', message: content }));
+        appendMessage(content, currentUser, null);
+    } else {
+        // Fallback: HTTP POST
+        fetch(`/messaging/send/${otherUser}/`, {
+            method: 'POST',
+            headers: { 'X-CSRFToken': csrfToken, 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
+            body: `content=${encodeURIComponent(content)}`
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.status === 'ok') appendMessage(content, currentUser, null);
+        })
+        .catch(() => appendMessage(content, currentUser, null));
+    }
+
+    input.value = '';
+    input.focus();
+});
+
+// Typing indicator
+document.getElementById('message-input').addEventListener('input', function() {
+    if (socket && socket.readyState === WebSocket.OPEN) {
+        socket.send(JSON.stringify({ type: 'typing', user: currentUser }));
+    }
+});
 </script>
+
+<style>
+.typing-dots span { animation: blink 1.4s infinite; }
+.typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+.typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes blink { 0%,80%,100%{opacity:0} 40%{opacity:1} }
+.sidebar-conv:hover { background-color: #f8f9fa; }
+</style>
 {% endblock %}

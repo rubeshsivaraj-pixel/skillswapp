@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block title %}Notifications - SkillSwap{% endblock %}
+
+{% block content %}
+<div class="container py-4" style="max-width:760px;">
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h3 class="fw-bold mb-0"><i class="bi bi-bell-fill me-2 text-primary"></i>Notifications</h3>
+            <small class="text-muted">Your recent activity and updates</small>
+        </div>
+        {% if notifications %}
+        <form method="post" action="{% url 'mark_all_read' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline-secondary btn-sm"><i class="bi bi-check2-all me-1"></i>Mark All Read</button>
+        </form>
+        {% endif %}
+    </div>
+
+    {% if notifications %}
+    <div class="card border-0 shadow-sm p-0 overflow-hidden">
+        {% for notif in notifications %}
+        <div class="d-flex align-items-start p-3 border-bottom {% if not notif.is_read %}bg-primary-subtle{% endif %} notification-item" data-id="{{ notif.id }}">
+            <!-- Icon -->
+            <div class="me-3 flex-shrink-0">
+                {% if notif.notification_type == 'MESSAGE' %}
+                <div class="rounded-circle d-flex align-items-center justify-content-center" style="width:40px;height:40px;background:#e3f2fd;"><i class="bi bi-chat-fill text-primary"></i></div>
+                {% elif notif.notification_type == 'SESSION_REQUEST' %}
+                <div class="rounded-circle d-flex align-items-center justify-content-center" style="width:40px;height:40px;background:#f3e5f5;"><i class="bi bi-calendar-plus-fill text-purple" style="color:#9c27b0;"></i></div>
+                {% elif notif.notification_type == 'SESSION_ACCEPTED' %}
+                <div class="rounded-circle d-flex align-items-center justify-content-center" style="width:40px;height:40px;background:#e8f5e9;"><i class="bi bi-check-circle-fill text-success"></i></div>
+                {% elif notif.notification_type == 'SESSION_REJECTED' %}
+                <div class="rounded-circle d-flex align-items-center justify-content-center" style="width:40px;height:40px;background:#ffebee;"><i class="bi bi-x-circle-fill text-danger"></i></div>
+                {% elif notif.notification_type == 'CREDITS_EARNED' %}
+                <div class="rounded-circle d-flex align-items-center justify-content-center" style="width:40px;height:40px;background:#fff8e1;"><i class="bi bi-coin text-warning"></i></div>
+                {% elif notif.notification_type == 'MATCH_FOUND' %}
+                <div class="rounded-circle d-flex align-items-center justify-content-center" style="width:40px;height:40px;background:#e8f5e9;"><i class="bi bi-people-fill text-success"></i></div>
+                {% elif notif.notification_type == 'REVIEW_RECEIVED' %}
+                <div class="rounded-circle d-flex align-items-center justify-content-center" style="width:40px;height:40px;background:#fff3e0;"><i class="bi bi-star-fill text-warning"></i></div>
+                {% else %}
+                <div class="rounded-circle d-flex align-items-center justify-content-center" style="width:40px;height:40px;background:#f5f5f5;"><i class="bi bi-info-circle-fill text-secondary"></i></div>
+                {% endif %}
+            </div>
+
+            <!-- Content -->
+            <div class="flex-grow-1 min-w-0">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div class="fw-semibold small {% if not notif.is_read %}text-dark{% else %}text-muted{% endif %}">{{ notif.title }}</div>
+                    <small class="text-muted ms-2 flex-shrink-0">{{ notif.created_at|timesince }} ago</small>
+                </div>
+                <div class="text-muted small mt-1">{{ notif.message }}</div>
+            </div>
+
+            <!-- Unread dot + mark read -->
+            <div class="ms-2 flex-shrink-0">
+                {% if not notif.is_read %}
+                <a href="{% url 'mark_notification_read' notif.id %}" class="text-muted" title="Mark as read">
+                    <i class="bi bi-circle-fill text-primary" style="font-size:0.5em;"></i>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+        <i class="bi bi-bell-slash fs-1 text-muted opacity-25"></i>
+        <h5 class="mt-3 text-muted">No notifications yet</h5>
+        <p class="text-muted small">You'll see notifications here when there's activity on your account.</p>
+        <a href="{% url 'dashboard' %}" class="btn btn-outline-primary mt-2">Go to Dashboard</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

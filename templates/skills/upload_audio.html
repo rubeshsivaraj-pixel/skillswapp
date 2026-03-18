@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block title %}Upload Audio Lesson - SkillSwap{% endblock %}
+
+{% block content %}
+<div class="container py-4" style="max-width:700px;">
+    <!-- Credit info banner -->
+    <div class="card border-0 mb-4" style="background:linear-gradient(135deg,#f093fb 0%,#f5576c 100%);">
+        <div class="card-body text-white d-flex align-items-center gap-3 p-4">
+            <i class="bi bi-music-note-beamed fs-2"></i>
+            <div>
+                <h5 class="fw-bold mb-1">Upload an Audio Lesson</h5>
+                <p class="mb-0 opacity-90">Earn <strong>+5 credits</strong> when your audio lesson is approved.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-4">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <div class="alert alert-info border-0 mt-3" style="font-size:0.87em;">
+                    <i class="bi bi-info-circle me-2"></i>
+                    <strong>Note:</strong> Audio lessons are reviewed before being published. Credits are awarded on approval.
+                    Accepted formats: MP3, WAV, OGG, M4A (max 100 MB).
+                </div>
+                <div class="d-flex gap-3 mt-4">
+                    <button type="submit" class="btn btn-primary px-4 fw-semibold"><i class="bi bi-upload me-1"></i>Upload Audio</button>
+                    <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary px-4">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- My uploaded audio -->
+    {% if my_audio %}
+    <div class="card border-0 shadow-sm mt-4">
+        <div class="card-header bg-white border-0 pt-3">
+            <h6 class="fw-bold mb-0"><i class="bi bi-headphones me-2 text-primary"></i>My Uploaded Audio</h6>
+        </div>
+        <div class="card-body p-0">
+            {% for audio in my_audio %}
+            <div class="d-flex align-items-center justify-content-between p-3 border-bottom">
+                <div>
+                    <div class="fw-semibold small">{{ audio.title }}</div>
+                    <small class="text-muted">{{ audio.skill.name }} • {{ audio.created_at|date:"M d, Y" }}</small>
+                </div>
+                {% if audio.status == 'APPROVED' %}
+                <span class="badge bg-success">Approved (+5 credits)</span>
+                {% elif audio.status == 'PENDING' %}
+                <span class="badge bg-warning text-dark">Pending Review</span>
+                {% else %}
+                <span class="badge bg-danger">Rejected</span>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

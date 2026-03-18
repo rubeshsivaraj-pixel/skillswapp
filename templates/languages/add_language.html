@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block title %}Add Language - SkillSwap{% endblock %}
+{% block content %}
+<div class="container py-4" style="max-width:560px;">
+  <div class="card border-0 shadow-sm">
+    <div class="card-header bg-success text-white border-0 py-3">
+      <h5 class="fw-bold mb-0"><i class="bi bi-translate me-2"></i>Add Language Profile</h5>
+    </div>
+    <div class="card-body p-4">
+      <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Language</label>
+          <select name="language" class="form-select" required>
+            <option value="">-- Select Language --</option>
+            {% for code, name in language_choices %}
+            <option value="{{ code }}">{{ name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold">I want to</label>
+          <select name="role" class="form-select" required>
+            <option value="TEACH">Teach this language</option>
+            <option value="LEARN">Learn this language</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Proficiency Level</label>
+          <select name="proficiency" class="form-select">
+            <option value="Native">Native Speaker</option>
+            <option value="Advanced">Advanced</option>
+            <option value="Intermediate" selected>Intermediate</option>
+            <option value="Beginner">Beginner</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Credits per Hour (if teaching)</label>
+          <input type="number" name="hourly_credits" class="form-control" value="20" min="5" max="200">
+        </div>
+        <div class="mb-4">
+          <label class="form-label fw-semibold">Short Bio</label>
+          <textarea name="bio" class="form-control" rows="3" placeholder="Tell learners about your experience..."></textarea>
+        </div>
+        <div class="d-flex gap-3">
+          <button type="submit" class="btn btn-success px-4"><i class="bi bi-plus-lg me-1"></i>Save</button>
+          <a href="{% url 'my_languages' %}" class="btn btn-outline-secondary px-4">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

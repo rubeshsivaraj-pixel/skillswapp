@@ -1,0 +1,304 @@
+{% extends 'base.html' %}
+{% block title %}Leaderboard - SkillSwap{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4 py-4">
+    <!-- Header -->
+    <div class="row mb-4 align-items-center">
+        <div class="col">
+            <h2 class="fw-bold mb-1"><i class="bi bi-trophy-fill me-2 text-warning"></i>Leaderboard</h2>
+            <p class="text-muted">Top contributors, teachers, and learners on the platform</p>
+        </div>
+    </div>
+
+    <!-- Tabs -->
+    <ul class="nav nav-pills mb-4" id="leaderboardTabs">
+        <li class="nav-item"><a class="nav-link active" data-bs-toggle="pill" href="#teachers"><i class="bi bi-mortarboard me-1"></i>Top Teachers</a></li>
+        <li class="nav-item"><a class="nav-link" data-bs-toggle="pill" href="#learners"><i class="bi bi-book me-1"></i>Top Learners</a></li>
+        <li class="nav-item"><a class="nav-link" data-bs-toggle="pill" href="#contributors"><i class="bi bi-star me-1"></i>Top Contributors</a></li>
+        <li class="nav-item"><a class="nav-link" data-bs-toggle="pill" href="#overall"><i class="bi bi-trophy me-1"></i>Overall</a></li>
+    </ul>
+
+    <div class="tab-content">
+        <!-- Top Teachers -->
+        <div class="tab-pane fade show active" id="teachers">
+            <div class="row g-4">
+                <!-- Podium -->
+                {% if top_teachers|length >= 3 %}
+                <div class="col-12">
+                    <div class="row g-3 justify-content-center align-items-end mb-4">
+                        <!-- 2nd Place -->
+                        <div class="col-sm-4 col-md-3 text-center">
+                            <div class="card border-0 shadow-sm podium-silver">
+                                <div class="card-body py-4">
+                                    <div class="position-relative d-inline-block mb-3">
+                                        {% with u=top_teachers.1 %}
+                                        {% if u.user.profile_picture %}
+                                        <img src="{{ u.user.profile_picture.url }}" class="rounded-circle border border-3" style="border-color:#C0C0C0!important;width:70px;height:70px;object-fit:cover;">
+                                        {% else %}
+                                        <div class="rounded-circle d-inline-flex align-items-center justify-content-center" style="width:70px;height:70px;background:linear-gradient(135deg,#6c757d,#adb5bd);">
+                                            <span style="color:white;font-size:1.5rem;font-weight:bold;">{{ u.user.username|first|upper }}</span>
+                                        </div>
+                                        {% endif %}
+                                        {% endwith %}
+                                    </div>
+                                    <div class="fs-2 mb-1">🥈</div>
+                                    <h6 class="fw-bold">{{ top_teachers.1.user.username }}</h6>
+                                    <div class="text-muted small">{{ top_teachers.1.sessions_taught }} sessions</div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 1st Place -->
+                        <div class="col-sm-4 col-md-3 text-center">
+                            <div class="card border-0 shadow-lg podium-gold" style="transform:scale(1.05)">
+                                <div class="card-body py-4">
+                                    <div class="position-relative d-inline-block mb-3">
+                                        {% with u=top_teachers.0 %}
+                                        {% if u.user.profile_picture %}
+                                        <img src="{{ u.user.profile_picture.url }}" class="rounded-circle border border-3" style="border-color:#FFD700!important;width:80px;height:80px;object-fit:cover;">
+                                        {% else %}
+                                        <div class="rounded-circle d-inline-flex align-items-center justify-content-center" style="width:80px;height:80px;background:linear-gradient(135deg,#667eea,#764ba2);">
+                                            <span style="color:white;font-size:2rem;font-weight:bold;">{{ u.user.username|first|upper }}</span>
+                                        </div>
+                                        {% endif %}
+                                        {% endwith %}
+                                    </div>
+                                    <div class="fs-1 mb-1">🏆</div>
+                                    <h6 class="fw-bold">{{ top_teachers.0.user.username }}</h6>
+                                    <div class="text-muted small">{{ top_teachers.0.sessions_taught }} sessions</div>
+                                    <div class="mt-1"><span class="badge" style="background:linear-gradient(135deg,#667eea,#764ba2);">Top Teacher</span></div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 3rd Place -->
+                        <div class="col-sm-4 col-md-3 text-center">
+                            <div class="card border-0 shadow-sm podium-bronze">
+                                <div class="card-body py-4">
+                                    <div class="position-relative d-inline-block mb-3">
+                                        {% with u=top_teachers.2 %}
+                                        {% if u.user.profile_picture %}
+                                        <img src="{{ u.user.profile_picture.url }}" class="rounded-circle border border-3" style="border-color:#CD7F32!important;width:60px;height:60px;object-fit:cover;">
+                                        {% else %}
+                                        <div class="rounded-circle d-inline-flex align-items-center justify-content-center" style="width:60px;height:60px;background:linear-gradient(135deg,#cd7f32,#a0522d);">
+                                            <span style="color:white;font-size:1.2rem;font-weight:bold;">{{ u.user.username|first|upper }}</span>
+                                        </div>
+                                        {% endif %}
+                                        {% endwith %}
+                                    </div>
+                                    <div class="fs-2 mb-1">🥉</div>
+                                    <h6 class="fw-bold">{{ top_teachers.2.user.username }}</h6>
+                                    <div class="text-muted small">{{ top_teachers.2.sessions_taught }} sessions</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Full List -->
+                <div class="col-12">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0 align-middle">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th class="ps-4">Rank</th>
+                                            <th>User</th>
+                                            <th>Sessions Taught</th>
+                                            <th>Rating</th>
+                                            <th>Credits</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for lb in top_teachers %}
+                                        <tr {% if lb.user == request.user %}class="table-primary"{% endif %}>
+                                            <td class="ps-4">
+                                                {% if forloop.counter == 1 %}<span class="text-warning fs-5">🏆</span>
+                                                {% elif forloop.counter == 2 %}<span class="fs-5">🥈</span>
+                                                {% elif forloop.counter == 3 %}<span class="fs-5">🥉</span>
+                                                {% else %}<span class="text-muted fw-bold">#{{ forloop.counter }}</span>{% endif %}
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center gap-2">
+                                                    {% if lb.user.profile_picture %}
+                                                    <img src="{{ lb.user.profile_picture.url }}" class="rounded-circle" width="40" height="40" style="object-fit:cover;">
+                                                    {% else %}
+                                                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width:40px;height:40px;background:linear-gradient(135deg,#667eea,#764ba2);">
+                                                        <span style="color:white;font-weight:bold;">{{ lb.user.username|first|upper }}</span>
+                                                    </div>
+                                                    {% endif %}
+                                                    <div>
+                                                        <div class="fw-semibold">{{ lb.user.username }} {% if lb.user == request.user %}<span class="badge bg-primary ms-1" style="font-size:0.6em;">You</span>{% endif %}</div>
+                                                        <small class="text-muted">{{ lb.user.get_full_name }}</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td><span class="badge bg-success-subtle text-success">{{ lb.sessions_taught }}</span></td>
+                                            <td>
+                                                <div class="text-warning">
+                                                    {% for i in "12345" %}{% if forloop.counter <= lb.average_rating %}<i class="bi bi-star-fill" style="font-size:0.8em;"></i>{% else %}<i class="bi bi-star" style="font-size:0.8em;"></i>{% endif %}{% endfor %}
+                                                    <small class="text-muted ms-1">{{ lb.average_rating|floatformat:1 }}</small>
+                                                </div>
+                                            </td>
+                                            <td><span class="badge bg-warning text-dark">{{ lb.total_credits_earned }}</span></td>
+                                        </tr>
+                                        {% empty %}
+                                        <tr><td colspan="5" class="text-center py-4 text-muted">No data yet</td></tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Learners -->
+        <div class="tab-pane fade" id="learners">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0 align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="ps-4">Rank</th>
+                                    <th>User</th>
+                                    <th>Sessions Learned</th>
+                                    <th>Skills Learned</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for lb in top_learners %}
+                                <tr {% if lb.user == request.user %}class="table-primary"{% endif %}>
+                                    <td class="ps-4">
+                                        {% if forloop.counter == 1 %}🏆{% elif forloop.counter == 2 %}🥈{% elif forloop.counter == 3 %}🥉{% else %}#{{ forloop.counter }}{% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+                                            {% if lb.user.profile_picture %}
+                                            <img src="{{ lb.user.profile_picture.url }}" class="rounded-circle" width="40" height="40" style="object-fit:cover;">
+                                            {% else %}
+                                            <div class="rounded-circle d-flex align-items-center justify-content-center" style="width:40px;height:40px;background:linear-gradient(135deg,#667eea,#764ba2);">
+                                                <span style="color:white;font-weight:bold;">{{ lb.user.username|first|upper }}</span>
+                                            </div>
+                                            {% endif %}
+                                            <div><div class="fw-semibold">{{ lb.user.username }} {% if lb.user == request.user %}<span class="badge bg-primary ms-1" style="font-size:0.6em;">You</span>{% endif %}</div></div>
+                                        </div>
+                                    </td>
+                                    <td><span class="badge bg-primary-subtle text-primary">{{ lb.sessions_learned }}</span></td>
+                                    <td><span class="badge bg-info-subtle text-info">{{ lb.skills_learned }}</span></td>
+                                </tr>
+                                {% empty %}
+                                <tr><td colspan="4" class="text-center py-4 text-muted">No data yet</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Contributors -->
+        <div class="tab-pane fade" id="contributors">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0 align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="ps-4">Rank</th>
+                                    <th>User</th>
+                                    <th>Videos Uploaded</th>
+                                    <th>Audio Uploaded</th>
+                                    <th>Total Credits Earned</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for lb in top_contributors %}
+                                <tr {% if lb.user == request.user %}class="table-primary"{% endif %}>
+                                    <td class="ps-4">{% if forloop.counter == 1 %}🏆{% elif forloop.counter == 2 %}🥈{% elif forloop.counter == 3 %}🥉{% else %}#{{ forloop.counter }}{% endif %}</td>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+                                            {% if lb.user.profile_picture %}
+                                            <img src="{{ lb.user.profile_picture.url }}" class="rounded-circle" width="40" height="40" style="object-fit:cover;">
+                                            {% else %}
+                                            <div class="rounded-circle d-flex align-items-center justify-content-center" style="width:40px;height:40px;background:linear-gradient(135deg,#667eea,#764ba2);">
+                                                <span style="color:white;font-weight:bold;">{{ lb.user.username|first|upper }}</span>
+                                            </div>
+                                            {% endif %}
+                                            <div><div class="fw-semibold">{{ lb.user.username }} {% if lb.user == request.user %}<span class="badge bg-primary ms-1" style="font-size:0.6em;">You</span>{% endif %}</div></div>
+                                        </div>
+                                    </td>
+                                    <td><span class="badge bg-danger-subtle text-danger">{{ lb.videos_uploaded }}</span></td>
+                                    <td><span class="badge bg-warning-subtle text-warning">{{ lb.audio_uploaded }}</span></td>
+                                    <td><span class="badge bg-success text-white">{{ lb.total_credits_earned }} credits</span></td>
+                                </tr>
+                                {% empty %}
+                                <tr><td colspan="5" class="text-center py-4 text-muted">No data yet</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Overall -->
+        <div class="tab-pane fade" id="overall">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0 align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="ps-4">Rank</th>
+                                    <th>User</th>
+                                    <th>Sessions</th>
+                                    <th>Credits</th>
+                                    <th>Rating</th>
+                                    <th>Content</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for lb in top_rated %}
+                                <tr {% if lb.user == request.user %}class="table-primary"{% endif %}>
+                                    <td class="ps-4">{% if forloop.counter == 1 %}🏆{% elif forloop.counter == 2 %}🥈{% elif forloop.counter == 3 %}🥉{% else %}#{{ forloop.counter }}{% endif %}</td>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+                                            {% if lb.user.profile_picture %}
+                                            <img src="{{ lb.user.profile_picture.url }}" class="rounded-circle" width="40" height="40" style="object-fit:cover;">
+                                            {% else %}
+                                            <div class="rounded-circle d-flex align-items-center justify-content-center" style="width:40px;height:40px;background:linear-gradient(135deg,#667eea,#764ba2);">
+                                                <span style="color:white;font-weight:bold;">{{ lb.user.username|first|upper }}</span>
+                                            </div>
+                                            {% endif %}
+                                            <div><div class="fw-semibold">{{ lb.user.username }} {% if lb.user == request.user %}<span class="badge bg-primary ms-1" style="font-size:0.6em;">You</span>{% endif %}</div></div>
+                                        </div>
+                                    </td>
+                                    <td><small>T: {{ lb.sessions_taught }} | L: {{ lb.sessions_learned }}</small></td>
+                                    <td><span class="badge bg-warning text-dark">{{ lb.total_credits_earned }}</span></td>
+                                    <td>
+                                        {% for i in "12345" %}{% if forloop.counter <= lb.average_rating %}<i class="bi bi-star-fill text-warning" style="font-size:0.8em;"></i>{% else %}<i class="bi bi-star text-warning" style="font-size:0.8em;"></i>{% endif %}{% endfor %}
+                                    </td>
+                                    <td><small>{{ lb.videos_uploaded }}v / {{ lb.audio_uploaded }}a</small></td>
+                                </tr>
+                                {% empty %}
+                                <tr><td colspan="6" class="text-center py-4 text-muted">No data yet</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.podium-gold { border-top: 4px solid #FFD700 !important; }
+.podium-silver { border-top: 4px solid #C0C0C0 !important; }
+.podium-bronze { border-top: 4px solid #CD7F32 !important; }
+</style>
+{% endblock %}

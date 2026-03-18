@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}My Languages - SkillSwap{% endblock %}
+{% block content %}
+<div class="container py-4" style="max-width:800px;">
+  <div class="d-flex align-items-center justify-content-between mb-4">
+    <h4 class="fw-bold mb-0"><i class="bi bi-translate me-2 text-success"></i>My Languages</h4>
+    <a href="{% url 'add_language' %}" class="btn btn-success btn-sm"><i class="bi bi-plus-lg me-1"></i>Add Language</a>
+  </div>
+  {% if profiles %}
+  <div class="row g-3">
+    {% for p in profiles %}
+    <div class="col-md-6">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body d-flex align-items-center gap-3">
+          <div class="fs-2">{% if p.role == 'TEACH' %}👨‍🏫{% else %}📚{% endif %}</div>
+          <div class="flex-grow-1">
+            <div class="fw-bold">{{ p.get_language_display }}</div>
+            <div class="text-muted small">{{ p.get_role_display }} · {{ p.proficiency }}</div>
+            {% if p.role == 'TEACH' %}
+            <div class="small text-success">{{ p.hourly_credits }} credits/hr</div>
+            {% endif %}
+          </div>
+          <span class="badge {% if p.role == 'TEACH' %}bg-success{% else %}bg-primary{% endif %}">
+            {{ p.get_role_display }}
+          </span>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="text-center py-5 text-muted">
+    <i class="bi bi-translate fs-1 opacity-25"></i>
+    <h5 class="mt-3">No language profiles yet</h5>
+    <a href="{% url 'add_language' %}" class="btn btn-success mt-2">Add Your First Language</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

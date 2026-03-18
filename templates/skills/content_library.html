@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+{% block title %}Content Library - SkillSwap{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4 py-4">
+    <!-- Header -->
+    <div class="row mb-4 align-items-center">
+        <div class="col">
+            <h2 class="fw-bold mb-1"><i class="bi bi-collection-play-fill me-2 text-primary"></i>Content Library</h2>
+            <p class="text-muted">Browse tutorials and audio lessons from the community</p>
+        </div>
+        <div class="col-auto d-flex gap-2">
+            <a href="{% url 'upload_video' %}" class="btn btn-primary btn-sm"><i class="bi bi-camera-video me-1"></i>Upload Video</a>
+            <a href="{% url 'upload_audio' %}" class="btn btn-outline-primary btn-sm"><i class="bi bi-mic me-1"></i>Upload Audio</a>
+        </div>
+    </div>
+
+    <!-- Search and Filter -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body py-3">
+            <form method="get" class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+                        <input type="text" class="form-control border-start-0" name="q" value="{{ search_query }}" placeholder="Search videos and audio...">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <select name="skill" class="form-select">
+                        <option value="">All Skills</option>
+                        {% for skill in skills %}
+                        <option value="{{ skill.name }}" {% if skill_filter == skill.name %}selected{% endif %}>{{ skill.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select name="type" class="form-select">
+                        <option value="all" {% if content_type == 'all' %}selected{% endif %}>All Content</option>
+                        <option value="video" {% if content_type == 'video' %}selected{% endif %}>Videos Only</option>
+                        <option value="audio" {% if content_type == 'audio' %}selected{% endif %}>Audio Only</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">Filter</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tabs -->
+    <ul class="nav nav-pills mb-4" id="contentTabs">
+        <li class="nav-item"><a class="nav-link {% if content_type != 'audio' %}active{% endif %}" data-bs-toggle="pill" href="#videos-tab"><i class="bi bi-camera-video me-1"></i>Videos <span class="badge bg-secondary ms-1">{{ videos|length }}</span></a></li>
+        <li class="nav-item"><a class="nav-link {% if content_type == 'audio' %}active{% endif %}" data-bs-toggle="pill" href="#audio-tab"><i class="bi bi-headphones me-1"></i>Audio Lessons <span class="badge bg-secondary ms-1">{{ audio|length }}</span></a></li>
+    </ul>
+
+    <div class="tab-content">
+        <!-- Videos -->
+        <div class="tab-pane fade {% if content_type != 'audio' %}show active{% endif %}" id="videos-tab">
+            {% if videos %}
+            <div class="row g-4">
+                {% for video in videos %}
+                <div class="col-sm-6 col-md-4 col-xl-3">
+                    <div class="card border-0 shadow-sm h-100 content-card">
+                        <!-- Thumbnail -->
+                        <div class="ratio ratio-16x9" style="background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);">
+                            {% if video.thumbnail %}
+                            <img src="{{ video.thumbnail.url }}" style="object-fit:cover;" alt="{{ video.title }}">
+                            {% else %}
+                            <div class="d-flex align-items-center justify-content-center">
+                                <i class="bi bi-play-circle-fill text-white opacity-75" style="font-size:3rem;"></i>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="card-body">
+                            <h6 class="fw-bold mb-1 text-truncate">{{ video.title }}</h6>
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <span class="badge bg-primary-subtle text-primary" style="font-size:0.72em;">{{ video.skill.name }}</span>
+                            </div>
+                            {% if video.description %}
+                            <p class="text-muted small mb-2" style="display:-webkit-box;-webkit-line-clamp:2;line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">{{ video.description }}</p>
+                            {% endif %}
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center gap-2">
+                                    {% if video.user.profile_picture %}
+                                    <img src="{{ video.user.profile_picture.url }}" class="rounded-circle" width="22" height="22" style="object-fit:cover;">
+                                    {% else %}
+                                    <div class="rounded-circle d-inline-flex align-items-center justify-content-center" style="width:22px;height:22px;background:linear-gradient(135deg,#667eea,#764ba2);">
+                                        <span style="color:white;font-size:0.7rem;font-weight:bold;">{{ video.user.username|first|upper }}</span>
+                                    </div>
+                                    {% endif %}
+                                    <small class="text-muted">{{ video.user.username }}</small>
+                                </div>
+                                <small class="text-muted">{{ video.created_at|date:"M d" }}</small>
+                            </div>
+                        </div>
+                        {% if video.video_file %}
+                        <div class="card-footer bg-white border-0 pt-0 pb-3 px-3">
+                            <a href="{% url 'video_detail' video.pk %}" class="btn btn-sm btn-outline-primary w-100"><i class="bi bi-play-fill me-1"></i>Watch</a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-camera-video-off fs-1 text-muted opacity-25"></i>
+                <h5 class="mt-3 text-muted">No videos yet</h5>
+                <p class="text-muted small">Be the first to upload a tutorial video!</p>
+                <a href="{% url 'upload_video' %}" class="btn btn-primary mt-2"><i class="bi bi-upload me-1"></i>Upload Video</a>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Audio -->
+        <div class="tab-pane fade {% if content_type == 'audio' %}show active{% endif %}" id="audio-tab">
+            {% if audio %}
+            <div class="row g-3">
+                {% for lesson in audio %}
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm h-100 content-card">
+                        <div class="card-body d-flex gap-3">
+                            <!-- Icon -->
+                            <div class="flex-shrink-0 rounded-3 d-flex align-items-center justify-content-center" style="width:64px;height:64px;background:linear-gradient(135deg,#f093fb 0%,#f5576c 100%);">
+                                <i class="bi bi-music-note-beamed text-white fs-4"></i>
+                            </div>
+                            <!-- Content -->
+                            <div class="flex-grow-1 min-w-0">
+                                <h6 class="fw-bold mb-1 text-truncate">{{ lesson.title }}</h6>
+                                <div class="mb-1">
+                                    <span class="badge bg-danger-subtle text-danger" style="font-size:0.72em;">{{ lesson.skill.name }}</span>
+                                </div>
+                                {% if lesson.description %}
+                                <p class="text-muted small mb-2" style="display:-webkit-box;-webkit-line-clamp:2;line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">{{ lesson.description }}</p>
+                                {% endif %}
+                                <div class="d-flex align-items-center gap-2">
+                                    <small class="text-muted">by {{ lesson.user.username }}</small>
+                                    <small class="text-muted">•</small>
+                                    <small class="text-muted">{{ lesson.created_at|date:"M d, Y" }}</small>
+                                </div>
+                                {% if lesson.audio_file %}
+                                <div class="mt-2">
+                                    <audio controls class="w-100" style="height:36px;">
+                                        <source src="{{ lesson.audio_file.url }}">
+                                    </audio>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-headphones fs-1 text-muted opacity-25"></i>
+                <h5 class="mt-3 text-muted">No audio lessons yet</h5>
+                <p class="text-muted small">Be the first to upload an audio lesson!</p>
+                <a href="{% url 'upload_audio' %}" class="btn btn-primary mt-2"><i class="bi bi-upload me-1"></i>Upload Audio</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+.content-card { transition: transform 0.2s; }
+.content-card:hover { transform: translateY(-4px); box-shadow: 0 8px 25px rgba(0,0,0,0.12) !important; }
+</style>
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block title %}My Language Sessions - SkillSwap{% endblock %}
+{% block content %}
+<div class="container py-4">
+  <h4 class="fw-bold mb-4"><i class="bi bi-calendar2-week me-2 text-success"></i>My Language Sessions</h4>
+  <ul class="nav nav-tabs mb-4" id="sessionsTab">
+    <li class="nav-item">
+      <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#teaching">Teaching ({{ teaching.count }})</button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link" data-bs-toggle="tab" data-bs-target="#learning">Learning ({{ learning.count }})</button>
+    </li>
+  </ul>
+  <div class="tab-content">
+    <div class="tab-pane fade show active" id="teaching">
+      {% if teaching %}
+      <div class="row g-3">
+        {% for s in teaching %}
+        <div class="col-md-6 col-lg-4">
+          <div class="card border-0 shadow-sm">
+            <div class="card-body">
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <span class="badge bg-{{ s.status|lower|slice:':1' == 'c' and 'success' or 'secondary' }}">{{ s.get_status_display }}</span>
+                <small class="text-muted">{{ s.get_language_display }}</small>
+              </div>
+              <div class="fw-bold">{{ s.student.get_full_name|default:s.student.username }}</div>
+              <div class="small text-muted">{{ s.scheduled_at|date:"D, d M Y · H:i" }}</div>
+              {% if s.notes %}<div class="small mt-1 text-secondary">{{ s.notes|truncatechars:60 }}</div>{% endif %}
+              <div class="mt-2 text-success small fw-semibold"><i class="bi bi-coin me-1"></i>{{ s.credits_paid }} credits earned</div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="text-center py-4 text-muted"><i class="bi bi-camera-video fs-2 opacity-25"></i><p class="mt-2">No teaching sessions yet.</p></div>
+      {% endif %}
+    </div>
+    <div class="tab-pane fade" id="learning">
+      {% if learning %}
+      <div class="row g-3">
+        {% for s in learning %}
+        <div class="col-md-6 col-lg-4">
+          <div class="card border-0 shadow-sm">
+            <div class="card-body">
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <span class="badge bg-secondary">{{ s.get_status_display }}</span>
+                <small class="text-muted">{{ s.get_language_display }}</small>
+              </div>
+              <div class="fw-bold">{{ s.teacher.get_full_name|default:s.teacher.username }}</div>
+              <div class="small text-muted">{{ s.scheduled_at|date:"D, d M Y · H:i" }}</div>
+              {% if s.notes %}<div class="small mt-1 text-secondary">{{ s.notes|truncatechars:60 }}</div>{% endif %}
+              <div class="mt-2 text-danger small fw-semibold"><i class="bi bi-coin me-1"></i>{{ s.credits_paid }} credits paid</div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="text-center py-4 text-muted"><i class="bi bi-book fs-2 opacity-25"></i><p class="mt-2">No learning sessions yet.</p></div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+{% block title %}{{ video.title }} - SkillSwap{% endblock %}
+
+{% block content %}
+<div class="container py-4" style="max-width:960px;">
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'content_library' %}">Library</a></li>
+            <li class="breadcrumb-item text-truncate active">{{ video.title }}</li>
+        </ol>
+    </nav>
+
+    <div class="row g-4">
+        <!-- Player -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm overflow-hidden">
+                <div class="ratio ratio-16x9 bg-black">
+                    <video controls autoplay playsinline
+                           class="w-100 h-100"
+                           style="object-fit:contain;"
+                           preload="auto">
+                        {# Supply type so browser knows the codec and renders the video track #}
+                        {% with ext=video.video_file.name|lower %}
+                        {% if ".mp4" in ext or ".m4v" in ext %}
+                        <source src="{{ video.video_file.url }}" type="video/mp4">
+                        {% elif ".webm" in ext %}
+                        <source src="{{ video.video_file.url }}" type="video/webm">
+                        {% elif ".ogg" in ext or ".ogv" in ext %}
+                        <source src="{{ video.video_file.url }}" type="video/ogg">
+                        {% elif ".mov" in ext %}
+                        <source src="{{ video.video_file.url }}" type="video/quicktime">
+                        <source src="{{ video.video_file.url }}" type="video/mp4">
+                        {% elif ".avi" in ext %}
+                        <source src="{{ video.video_file.url }}" type="video/x-msvideo">
+                        {% elif ".mkv" in ext %}
+                        <source src="{{ video.video_file.url }}" type="video/x-matroska">
+                        {% else %}
+                        <source src="{{ video.video_file.url }}" type="video/mp4">
+                        <source src="{{ video.video_file.url }}">
+                        {% endif %}
+                        {% endwith %}
+                        <p class="text-white text-center p-3">
+                            Your browser cannot play this video inline.
+                            <a href="{{ video.video_file.url }}" download class="text-warning">Download to watch</a>.
+                        </p>
+                    </video>
+                </div>
+                <div class="card-body">
+                    <h4 class="fw-bold mb-1">{{ video.title }}</h4>
+                    <div class="d-flex flex-wrap align-items-center gap-3 mb-3 text-muted small">
+                        <span><i class="bi bi-eye me-1"></i>{{ video.views }} views</span>
+                        <span><i class="bi bi-heart me-1"></i>{{ video.likes }} likes</span>
+                        <span><i class="bi bi-calendar3 me-1"></i>{{ video.created_at|date:"M d, Y" }}</span>
+                        <span class="badge bg-primary-subtle text-primary">{{ video.skill.name }}</span>
+                    </div>
+                    {% if video.description %}
+                    <p class="text-muted">{{ video.description }}</p>
+                    {% endif %}
+
+                    <!-- Uploader -->
+                    <div class="d-flex align-items-center gap-3 mt-3 pt-3 border-top">
+                        {% if video.user.profile_picture %}
+                        <img src="{{ video.user.profile_picture.url }}" class="rounded-circle" width="44" height="44" style="object-fit:cover;">
+                        {% else %}
+                        <div class="rounded-circle d-flex align-items-center justify-content-center" style="width:44px;height:44px;background:linear-gradient(135deg,#667eea,#764ba2);">
+                            <span class="text-white fw-bold">{{ video.user.username|first|upper }}</span>
+                        </div>
+                        {% endif %}
+                        <div>
+                            <div class="fw-semibold">{{ video.user.get_full_name|default:video.user.username }}</div>
+                            <small class="text-muted">@{{ video.user.username }}</small>
+                        </div>
+                        {% if request.user.is_authenticated and request.user != video.user %}
+                        <a href="{% url 'chat' video.user.username %}" class="btn btn-sm btn-outline-primary ms-auto">
+                            <i class="bi bi-chat-dots me-1"></i>Message
+                        </a>
+                        {% endif %}
+                    </div>
+
+                    {% if request.user == video.user %}
+                    <div class="mt-3 pt-3 border-top">
+                        <a href="{% url 'delete_video' video.pk %}" class="btn btn-sm btn-outline-danger">
+                            <i class="bi bi-trash me-1"></i>Delete this video
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar: related videos -->
+        <div class="col-lg-4">
+            <h6 class="fw-bold mb-3">More on <span class="text-primary">{{ video.skill.name }}</span></h6>
+            {% for v in related %}
+            <a href="{% url 'video_detail' v.pk %}" class="text-decoration-none text-dark">
+                <div class="d-flex gap-3 mb-3">
+                    <div class="flex-shrink-0 rounded overflow-hidden" style="width:100px;height:60px;background:linear-gradient(135deg,#667eea,#764ba2);">
+                        {% if v.thumbnail %}
+                        <img src="{{ v.thumbnail.url }}" class="w-100 h-100" style="object-fit:cover;" alt="{{ v.title }}">
+                        {% else %}
+                        <div class="w-100 h-100 d-flex align-items-center justify-content-center">
+                            <i class="bi bi-play-circle-fill text-white opacity-75 fs-4"></i>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="flex-grow-1 min-w-0">
+                        <div class="fw-semibold small text-truncate">{{ v.title }}</div>
+                        <small class="text-muted">{{ v.user.username }}</small><br>
+                        <small class="text-muted"><i class="bi bi-eye me-1"></i>{{ v.views }}</small>
+                    </div>
+                </div>
+            </a>
+            {% empty %}
+            <p class="text-muted small">No other videos for this skill yet.</p>
+            {% endfor %}
+            <a href="{% url 'content_library' %}?skill={{ video.skill.name }}" class="btn btn-outline-primary btn-sm w-100 mt-2">
+                View all {{ video.skill.name }} videos
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

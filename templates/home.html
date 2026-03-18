@@ -1,56 +1,289 @@
 {% extends 'base.html' %}
+{% block title %}SkillSwap — AI-Powered Global Skill & Language Marketplace{% endblock %}
 
-{% block title %}Peer Skill Swap - Learn & Teach for Free{% endblock %}
+{% block extra_head %}
+<style>
+  .hero-section {
+    background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-section::before {
+    content: '';
+    position: absolute;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(102,126,234,0.3) 0%, transparent 70%);
+    top: -200px; right: -100px;
+    border-radius: 50%;
+  }
+  .hero-section::after {
+    content: '';
+    position: absolute;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(118,75,162,0.25) 0%, transparent 70%);
+    bottom: -100px; left: -100px;
+    border-radius: 50%;
+  }
+  .stat-card { border-left: 4px solid; transition: transform .2s; }
+  .stat-card:hover { transform: translateY(-4px); }
+  .feature-icon { width: 64px; height: 64px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; }
+  .lang-pill { display: inline-block; padding: 6px 14px; border-radius: 50px; font-size: .82rem; font-weight: 600; background: rgba(102,126,234,.12); color: #667eea; border: 1px solid rgba(102,126,234,.3); transition: all .2s; cursor: default; }
+  .lang-pill:hover { background: #667eea; color: white; }
+  .category-card { border-radius: 16px; overflow: hidden; transition: transform .25s, box-shadow .25s; cursor: pointer; }
+  .category-card:hover { transform: translateY(-6px); box-shadow: 0 16px 40px rgba(0,0,0,.15) !important; }
+  .step-line::after { content: ''; position: absolute; top: 32px; left: 50%; width: 100%; height: 2px; background: linear-gradient(90deg, #667eea, #764ba2); z-index: 0; }
+  @media(max-width:768px){ .step-line::after { display: none; } }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="hero text-center rounded-4 mb-5 position-relative">
-    <div class="position-relative z-3">
-        <h1 class="display-3 fw-bold mb-3">Swap Skills, Not Cash</h1>
-        <p class="lead mb-4 fs-5">Learn what you want, teach what you know. Join a community of passionate learners and educators.</p>
-        <div class="d-flex gap-3 justify-content-center flex-wrap">
-            <a href="{% url 'register' %}" class="btn btn-custom btn-lg px-5">
-                <i class="bi bi-rocket-takeoff"></i> Join the Community
-            </a>
-            <a href="{% url 'login' %}" class="btn btn-outline-light btn-lg px-5">
-                <i class="bi bi-box-arrow-in-right"></i> Log In
-            </a>
+<!-- ========== HERO ========== -->
+<section class="hero-section text-white py-5 px-3 px-md-0">
+  <div class="container py-5 position-relative" style="z-index:2;">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-6">
+        <span class="badge rounded-pill mb-3 px-3 py-2" style="background:rgba(255,255,255,.15);font-size:.8rem;letter-spacing:.5px;">🌍 GLOBAL AI-POWERED PLATFORM</span>
+        <h1 class="display-4 fw-bold lh-1 mb-4">
+          Learn Any Skill,<br>
+          <span style="background:linear-gradient(90deg,#f093fb,#f5576c);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Teach What You Know</span>
+        </h1>
+        <p class="lead opacity-85 mb-4" style="font-size:1.15rem;">
+          Join thousands of learners &amp; teachers. Study 20+ languages with AI tutors, earn credits by teaching, and connect with mentors worldwide.
+        </p>
+        <div class="d-flex gap-3 flex-wrap mb-5">
+          <a href="{% url 'register' %}" class="btn btn-lg px-4 py-3 fw-bold" style="background:linear-gradient(135deg,#f093fb,#f5576c);color:#fff;border:none;border-radius:12px;">
+            <i class="bi bi-rocket-takeoff me-2"></i>Get Started Free
+          </a>
+          <a href="{% url 'login' %}" class="btn btn-outline-light btn-lg px-4 py-3 fw-bold" style="border-radius:12px;">
+            <i class="bi bi-box-arrow-in-right me-2"></i>Log In
+          </a>
         </div>
+        <div class="d-flex gap-4 flex-wrap">
+          <div><span class="fw-bold fs-4">10K+</span><br><small class="opacity-70">Learners</small></div>
+          <div><span class="fw-bold fs-4">50+</span><br><small class="opacity-70">Skills</small></div>
+          <div><span class="fw-bold fs-4">20</span><br><small class="opacity-70">Languages</small></div>
+          <div><span class="fw-bold fs-4">AI</span><br><small class="opacity-70">Tutors 24/7</small></div>
+        </div>
+      </div>
+      <div class="col-lg-6 d-none d-lg-block text-center">
+        <div class="position-relative" style="height:400px;">
+          <!-- Floating cards decoration -->
+          <div class="card border-0 shadow-lg position-absolute" style="top:20px;left:10%;width:220px;border-radius:16px;background:rgba(255,255,255,.95);">
+            <div class="card-body p-3">
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold" style="width:36px;height:36px;background:linear-gradient(135deg,#667eea,#764ba2);font-size:.9rem;">S</div>
+                <div><div class="fw-semibold small text-dark">Sarah M.</div><div class="text-muted" style="font-size:.7rem;">Spanish Tutor ⭐4.9</div></div>
+              </div>
+              <div><span class="badge bg-success-subtle text-success me-1">Spanish</span><span class="badge bg-primary-subtle text-primary">Grammar</span></div>
+            </div>
+          </div>
+          <div class="card border-0 shadow-lg position-absolute" style="top:140px;right:5%;width:240px;border-radius:16px;background:rgba(255,255,255,.95);">
+            <div class="card-body p-3">
+              <div class="d-flex align-items-center gap-2 mb-1">
+                <i class="bi bi-robot text-success fs-4"></i>
+                <div class="fw-semibold small text-dark">AI Language Tutor</div>
+              </div>
+              <p class="text-muted mb-1" style="font-size:.78rem;">Bonjour! Practice French anytime, with instant corrections.</p>
+              <span class="badge bg-warning text-dark">15 credits/session</span>
+            </div>
+          </div>
+          <div class="card border-0 shadow-lg position-absolute" style="bottom:30px;left:15%;width:200px;border-radius:16px;background:rgba(255,255,255,.95);">
+            <div class="card-body p-3 d-flex align-items-center gap-2">
+              <i class="bi bi-trophy-fill text-warning fs-3"></i>
+              <div><div class="fw-semibold small text-dark">+10 Credits Earned!</div><div class="text-muted" style="font-size:.7rem;">Video approved 🎉</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-</div>
+  </div>
+</section>
 
-<div class="row g-4 mt-2 mb-5">
-    <div class="col-lg-4 col-md-6">
-        <div class="card h-100 border-0 shadow-gradient" style="border-top: 3px solid var(--primary-color);">
-            <div class="card-body text-center p-5">
-                <div class="display-4 mb-3 text-gradient">
-                    <i class="bi bi-lightbulb"></i>
-                </div>
-                <h3 class="fw-bold mb-3">List Your Skills</h3>
-                <p class="text-muted fs-5 mb-0">Tell us what you can teach and what you want to learn. Build your expertise profile.</p>
-            </div>
-        </div>
+<!-- ========== CATEGORIES ========== -->
+<section class="py-5 bg-white">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="fw-bold fs-1">Explore Categories</h2>
+      <p class="text-muted">Find the perfect skill to learn or teach</p>
     </div>
-    <div class="col-lg-4 col-md-6">
-        <div class="card h-100 border-0 shadow-gradient" style="border-top: 3px solid var(--secondary-color);">
-            <div class="card-body text-center p-5">
-                <div class="display-4 mb-3 text-danger">
-                    <i class="bi bi-heart-handshake"></i>
-                </div>
-                <h3 class="fw-bold mb-3">Get Matched</h3>
-                <p class="text-muted fs-5 mb-0">Our smart algorithm connects you with people who want what you offer and offer what you need.</p>
+    <div class="row g-3 justify-content-center">
+      {% for icon, name, color, link in categories %}
+      <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+        <a href="{% url 'skill_marketplace' %}?category={{ name }}" class="text-decoration-none">
+          <div class="category-card card border-0 shadow-sm text-center p-4 h-100">
+            <div class="feature-icon mx-auto mb-3" style="background:{{ color }}20;">
+              <i class="{{ icon }}" style="color:{{ color }};"></i>
             </div>
-        </div>
+            <div class="fw-semibold text-dark small">{{ name }}</div>
+          </div>
+        </a>
+      </div>
+      {% empty %}
+      {% for item in "Languages,Programming,Music,Design,Cooking,Fitness,Business,Photography"|make_list %}
+      {% endfor %}
+      <div class="col-6 col-sm-4 col-md-3 col-lg-2"><div class="category-card card border-0 shadow-sm text-center p-4 h-100"><div class="feature-icon mx-auto mb-3" style="background:rgba(102,126,234,.1);"><i class="bi bi-translate text-primary"></i></div><div class="fw-semibold text-dark small">Languages</div></div></div>
+      <div class="col-6 col-sm-4 col-md-3 col-lg-2"><div class="category-card card border-0 shadow-sm text-center p-4 h-100"><div class="feature-icon mx-auto mb-3" style="background:rgba(102,126,234,.1);"><i class="bi bi-code-slash text-primary"></i></div><div class="fw-semibold text-dark small">Programming</div></div></div>
+      <div class="col-6 col-sm-4 col-md-3 col-lg-2"><div class="category-card card border-0 shadow-sm text-center p-4 h-100"><div class="feature-icon mx-auto mb-3" style="background:rgba(102,126,234,.1);"><i class="bi bi-music-note text-primary"></i></div><div class="fw-semibold text-dark small">Music</div></div></div>
+      <div class="col-6 col-sm-4 col-md-3 col-lg-2"><div class="category-card card border-0 shadow-sm text-center p-4 h-100"><div class="feature-icon mx-auto mb-3" style="background:rgba(102,126,234,.1);"><i class="bi bi-palette text-primary"></i></div><div class="fw-semibold text-dark small">Design</div></div></div>
+      <div class="col-6 col-sm-4 col-md-3 col-lg-2"><div class="category-card card border-0 shadow-sm text-center p-4 h-100"><div class="feature-icon mx-auto mb-3" style="background:rgba(102,126,234,.1);"><i class="bi bi-cup-hot text-primary"></i></div><div class="fw-semibold text-dark small">Cooking</div></div></div>
+      <div class="col-6 col-sm-4 col-md-3 col-lg-2"><div class="category-card card border-0 shadow-sm text-center p-4 h-100"><div class="feature-icon mx-auto mb-3" style="background:rgba(102,126,234,.1);"><i class="bi bi-activity text-primary"></i></div><div class="fw-semibold text-dark small">Fitness</div></div></div>
+      <div class="col-6 col-sm-4 col-md-3 col-lg-2"><div class="category-card card border-0 shadow-sm text-center p-4 h-100"><div class="feature-icon mx-auto mb-3" style="background:rgba(102,126,234,.1);"><i class="bi bi-briefcase text-primary"></i></div><div class="fw-semibold text-dark small">Business</div></div></div>
+      <div class="col-6 col-sm-4 col-md-3 col-lg-2"><div class="category-card card border-0 shadow-sm text-center p-4 h-100"><div class="feature-icon mx-auto mb-3" style="background:rgba(102,126,234,.1);"><i class="bi bi-camera text-primary"></i></div><div class="fw-semibold text-dark small">Photography</div></div></div>
+      {% endfor %}
     </div>
-    <div class="col-lg-4 col-md-6">
-        <div class="card h-100 border-0 shadow-gradient" style="border-top: 3px solid var(--success-color);">
-            <div class="card-body text-center p-5">
-                <div class="display-4 mb-3 text-success">
-                    <i class="bi bi-coin"></i>
-                </div>
-                <h3 class="fw-bold mb-3">Exchange Credits</h3>
-                <p class="text-muted fs-5 mb-0">Teach to earn credits. Spend credits to learn. Everyone wins in the skill economy!</p>
-            </div>
-        </div>
+  </div>
+</section>
+
+<!-- ========== HOW IT WORKS ========== -->
+<section class="py-5" style="background:#f8f9ff;">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="fw-bold fs-1">How SkillSwap Works</h2>
+      <p class="text-muted">Get started in 4 simple steps</p>
     </div>
-</div>
+    <div class="row g-4 text-center">
+      <div class="col-md-3 position-relative">
+        <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto mb-4 fw-bold fs-4 text-white" style="width:64px;height:64px;background:linear-gradient(135deg,#667eea,#764ba2);">1</div>
+        <h5 class="fw-bold">Create Profile</h5>
+        <p class="text-muted small">Register and set up your profile with skills you can teach and skills you want to learn.</p>
+      </div>
+      <div class="col-md-3">
+        <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto mb-4 fw-bold fs-4 text-white" style="width:64px;height:64px;background:linear-gradient(135deg,#f093fb,#f5576c);">2</div>
+        <h5 class="fw-bold">Get AI-Matched</h5>
+        <p class="text-muted small">Our AI matches you with the best mentors and learners based on your goals and ratings.</p>
+      </div>
+      <div class="col-md-3">
+        <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto mb-4 fw-bold fs-4 text-white" style="width:64px;height:64px;background:linear-gradient(135deg,#4facfe,#00f2fe);">3</div>
+        <h5 class="fw-bold">Teach &amp; Earn</h5>
+        <p class="text-muted small">Upload videos, teach sessions, and help learners. Earn credits for every contribution you make.</p>
+      </div>
+      <div class="col-md-3">
+        <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto mb-4 fw-bold fs-4 text-white" style="width:64px;height:64px;background:linear-gradient(135deg,#43e97b,#38f9d7);">4</div>
+        <h5 class="fw-bold">Learn &amp; Grow</h5>
+        <p class="text-muted small">Spend credits on courses, AI language lessons, and sessions with top-rated mentors worldwide.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== LANGUAGES ========== -->
+<section class="py-5 bg-white">
+  <div class="container">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-5">
+        <span class="badge bg-success-subtle text-success px-3 py-2 mb-3">🤖 AI-Powered</span>
+        <h2 class="fw-bold fs-1 mb-3">Learn 20+ Languages<br>with AI Tutors</h2>
+        <p class="text-muted mb-4">Have real conversations, get grammar corrections, practice vocabulary — available 24/7 with our AI tutors. All powered by OpenAI.</p>
+        <ul class="list-unstyled mb-4">
+          <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Real-time conversation practice</li>
+          <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Instant grammar corrections</li>
+          <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Vocabulary training with context</li>
+          <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Track your progress automatically</li>
+        </ul>
+        <a href="{% url 'register' %}" class="btn btn-success px-4 py-2 fw-bold" style="border-radius:10px;">Start Learning Free <i class="bi bi-arrow-right ms-1"></i></a>
+      </div>
+      <div class="col-lg-7">
+        <div class="d-flex flex-wrap gap-2 justify-content-center">
+          <span class="lang-pill">🇬🇧 English</span>
+          <span class="lang-pill">🇪🇸 Spanish</span>
+          <span class="lang-pill">🇫🇷 French</span>
+          <span class="lang-pill">🇩🇪 German</span>
+          <span class="lang-pill">🇮🇹 Italian</span>
+          <span class="lang-pill">🇵🇹 Portuguese</span>
+          <span class="lang-pill">🇳🇱 Dutch</span>
+          <span class="lang-pill">🇷🇺 Russian</span>
+          <span class="lang-pill">🇸🇦 Arabic</span>
+          <span class="lang-pill">🇮🇳 Hindi</span>
+          <span class="lang-pill">🇮🇳 Tamil</span>
+          <span class="lang-pill">🇨🇳 Chinese</span>
+          <span class="lang-pill">🇯🇵 Japanese</span>
+          <span class="lang-pill">🇰🇷 Korean</span>
+          <span class="lang-pill">🇹🇷 Turkish</span>
+          <span class="lang-pill">🇸🇪 Swedish</span>
+          <span class="lang-pill">🇳🇴 Norwegian</span>
+          <span class="lang-pill">🇬🇷 Greek</span>
+          <span class="lang-pill">🇵🇱 Polish</span>
+          <span class="lang-pill">🇹🇭 Thai</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== FEATURES ========== -->
+<section class="py-5" style="background:#f8f9ff;">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="fw-bold fs-1">Everything You Need</h2>
+      <p class="text-muted">A complete platform for skill sharing and learning</p>
+    </div>
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100 p-1" style="border-radius:16px;">
+          <div class="card-body p-4">
+            <div class="feature-icon mb-3" style="background:rgba(102,126,234,.1);"><i class="bi bi-camera-video-fill text-primary fs-3"></i></div>
+            <h5 class="fw-bold">Video Library</h5>
+            <p class="text-muted small mb-0">Upload tutorial videos. Earn credits on approval. Browse community-created content.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100 p-1" style="border-radius:16px;">
+          <div class="card-body p-4">
+            <div class="feature-icon mb-3" style="background:rgba(240,147,251,.1);"><i class="bi bi-chat-dots-fill fs-3" style="color:#f093fb;"></i></div>
+            <h5 class="fw-bold">Real-time Chat &amp; Calls</h5>
+            <p class="text-muted small mb-0">WebSocket messaging, typing indicators, and one-click HD video calls via Jitsi Meet.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100 p-1" style="border-radius:16px;">
+          <div class="card-body p-4">
+            <div class="feature-icon mb-3" style="background:rgba(79,172,254,.1);"><i class="bi bi-coin text-info fs-3"></i></div>
+            <h5 class="fw-bold">Credit Economy</h5>
+            <p class="text-muted small mb-0">Earn credits by teaching and uploading. Spend them to unlock courses and AI lessons.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100 p-1" style="border-radius:16px;">
+          <div class="card-body p-4">
+            <div class="feature-icon mb-3" style="background:rgba(67,233,123,.1);"><i class="bi bi-trophy-fill text-success fs-3"></i></div>
+            <h5 class="fw-bold">Leaderboard</h5>
+            <p class="text-muted small mb-0">Compete with top teachers, learners, and contributors. Rise through the ranks.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100 p-1" style="border-radius:16px;">
+          <div class="card-body p-4">
+            <div class="feature-icon mb-3" style="background:rgba(245,87,108,.1);"><i class="bi bi-person-heart text-danger fs-3"></i></div>
+            <h5 class="fw-bold">Friend Network</h5>
+            <p class="text-muted small mb-0">Build a network of skill-exchange partners, follow their progress, and grow together.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100 p-1" style="border-radius:16px;">
+          <div class="card-body p-4">
+            <div class="feature-icon mb-3" style="background:rgba(118,75,162,.1);"><i class="bi bi-bar-chart-line-fill text-purple fs-3" style="color:#764ba2;"></i></div>
+            <h5 class="fw-bold">Progress Tracking</h5>
+            <p class="text-muted small mb-0">Detailed dashboards for your language progress, session history, and credit timeline.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== CTA ========== -->
+<section class="py-5 text-white text-center" style="background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);">
+  <div class="container py-4">
+    <h2 class="fw-bold display-5 mb-3">Ready to Start Learning?</h2>
+    <p class="lead opacity-90 mb-4">Join thousands of learners and teachers. Free to get started.</p>
+    <a href="{% url 'register' %}" class="btn btn-lg btn-light fw-bold px-5 py-3" style="border-radius:12px;color:#764ba2;">
+      <i class="bi bi-rocket-takeoff me-2"></i>Create Free Account
+    </a>
+  </div>
+</section>
 {% endblock %}

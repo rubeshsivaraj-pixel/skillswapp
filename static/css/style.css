@@ -504,3 +504,216 @@ a:hover {
 ::-webkit-scrollbar-thumb:hover {
     background: var(--primary-dark);
 }
+
+/* ============= New Design Utilities ============= */
+
+/* Gradient color alias for new templates */
+:root {
+    --brand-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+/* ─── Video Player ─────────────────────────────────────── */
+video {
+    background: #000;
+    border-radius: 12px;
+}
+
+/* Aspect-ratio wrapper for videos */
+.video-wrapper {
+    position: relative;
+    width: 100%;
+    padding-top: 56.25%; /* 16:9 */
+    background: #000;
+    border-radius: 12px;
+    overflow: hidden;
+}
+.video-wrapper video,
+.video-wrapper iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: 12px;
+}
+
+/* ─── Profile Enhancements ─────────────────────────────── */
+.profile-cover {
+    height: 120px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: .5rem .5rem 0 0;
+}
+
+.profile-avatar-wrap {
+    margin-top: -50px;
+    display: inline-block;
+    position: relative;
+}
+
+.review-card {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1rem;
+    transition: box-shadow .2s;
+}
+.review-card:hover { box-shadow: 0 4px 12px rgba(99,102,241,.12); }
+
+/* ─── Call Button ─────────────────────────────────────── */
+.btn-call {
+    background: linear-gradient(135deg, #22d3ee 0%, #0ea5e9 100%);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(14,165,233,.35);
+}
+.btn-call:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(14,165,233,.5);
+    color: #fff;
+}
+
+/* ─── Skill Category Badges ────────────────────────────── */
+.category-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 999px;
+    padding: .3rem .85rem;
+    font-size: .8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .2s;
+}
+.category-badge:hover,
+.category-badge.active {
+    background: linear-gradient(135deg,#667eea,#764ba2);
+    color: #fff;
+    border-color: transparent;
+}
+
+/* ─── Hero improvements ─────────────────────────────────── */
+.hero-stat-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    background: rgba(255,255,255,.18);
+    border: 1px solid rgba(255,255,255,.3);
+    border-radius: 999px;
+    padding: .45rem 1.1rem;
+    font-size: .9rem;
+    font-weight: 600;
+    backdrop-filter: blur(8px);
+    color: #fff;
+}
+
+/* ─── Language pill ─────────────────────────────────────── */
+.lang-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    background: rgba(255,255,255,.12);
+    border: 1px solid rgba(255,255,255,.25);
+    border-radius: 999px;
+    padding: .4rem 1rem;
+    font-size: .85rem;
+    font-weight: 500;
+    color: #fff;
+    cursor: pointer;
+    transition: all .2s;
+    text-decoration: none;
+}
+.lang-pill:hover {
+    background: rgba(255,255,255,.26);
+    color: #fff;
+    transform: scale(1.05);
+}
+
+/* ─── Marketplace category grid ─────────────────────────── */
+.market-category-card {
+    border-radius: 14px;
+    cursor: pointer;
+    transition: transform .2s, box-shadow .2s;
+    border: 2px solid transparent;
+}
+.market-category-card:hover,
+.market-category-card.active {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(99,102,241,.18);
+    border-color: #667eea;
+}
+
+/* ─── Jitsi call page ──────────────────────────────────── */
+.call-page-body {
+    background: #0f0c29;
+    overflow: hidden;
+}
+
+/* Responsive container padding */
+@media (max-width: 768px) {
+    .container-fluid.px-4 { padding-left: 1rem !important; padding-right: 1rem !important; }
+}
+
+/* Card hover only on interactive cards */
+.card.no-lift:hover { transform: none; }
+
+/* Chat page: remove default card hover lift */
+#chat-box .card:hover { transform: none; box-shadow: none; }
+
+/* Notification badge pulse */
+@keyframes pulse-badge {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+}
+.badge-pulse { animation: pulse-badge 2s infinite; }
+
+/* Online status dot */
+.status-dot-online { width: 10px; height: 10px; background: #22c55e; border-radius: 50%; display: inline-block; }
+.status-dot-offline { width: 10px; height: 10px; background: #94a3b8; border-radius: 50%; display: inline-block; }
+
+/* Skill tags */
+.skill-tag {
+    display: inline-block;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 999px;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #475569;
+    transition: background 0.2s;
+}
+.skill-tag:hover { background: #e2e8f0; }
+
+/* Dashboard stat cards */
+.stat-card {
+    border-left: 4px solid;
+    border-radius: 12px;
+}
+.stat-card.credits { border-left-color: #f59e0b; }
+.stat-card.sessions { border-left-color: #667eea; }
+.stat-card.rating { border-left-color: #10b981; }
+.stat-card.rank { border-left-color: #f43f5e; }
+
+/* Match score indicator */
+.match-bar {
+    height: 6px;
+    border-radius: 999px;
+    background: #e2e8f0;
+    overflow: hidden;
+}
+.match-bar-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    transition: width 0.5s ease;
+}
+
+/* Leaderboard podium */
+.podium { align-items: flex-end; }
+
+/* Mobile: full chat height */
+@media (max-width: 767px) {
+    .col-md-9.d-flex { min-height: 100vh; }
+}
+

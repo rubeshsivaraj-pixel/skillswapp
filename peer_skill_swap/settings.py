@@ -29,7 +29,11 @@ SECRET_KEY = config('SECRET_KEY', default='django-insecure-z+9cgm-&82x8(1sdix^_q
 DEBUG = config('DEBUG', default=True, cast=bool)
 
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=lambda v: [s.strip() for s in v.split(',')])
-ALLOWED_HOSTS = ["*"]
+CSRF_TRUSTED_ORIGINS = config(
+    'CSRF_TRUSTED_ORIGINS',
+    default='http://localhost,http://127.0.0.1',
+    cast=lambda v: [s.strip() for s in v.split(',') if s.strip()]
+)
 
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
@@ -38,6 +42,7 @@ STATIC_URL = "/static/"
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',  # Django Channels ASGI server - must be first
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -48,18 +53,23 @@ INSTALLED_APPS = [
     # Third-party Apps
     'crispy_forms',
     'crispy_bootstrap5',
+    'channels',
 
     # Local Apps
     'accounts',
     'skills',
     'bookings',
     'messaging',
+    'notifications',
+    'leaderboard',
+    'credits',
+    'friends',
+    'languages',
+    'marketplace',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -81,6 +91,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'peer_skill_swap.context_processors.notifications_processor',
             ],
         },
     },
@@ -97,6 +108,7 @@ DATABASES = {
         default='sqlite:///' + str(BASE_DIR / 'db.sqlite3'),
         conn_max_age=600,
         conn_health_checks=True,
+        ssl_require=not DEBUG,
     )
 }
 
@@ -146,8 +158,27 @@ else:
 # WhiteNoise configuration
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-MEDIA_URL = 'media/'
+MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+# Allow large video/audio uploads (up to 500 MB)
+DATA_UPLOAD_MAX_MEMORY_SIZE = 524288000   # 500 MB
+FILE_UPLOAD_MAX_MEMORY_SIZE = 524288000   # 500 MB
+
+# Ensure correct MIME types are sent for video/audio files served by Django dev server
+import mimetypes
+mimetypes.add_type('video/mp4',          '.mp4')
+mimetypes.add_type('video/mp4',          '.m4v')
+mimetypes.add_type('video/webm',         '.webm')
+mimetypes.add_type('video/ogg',          '.ogv')
+mimetypes.add_type('video/quicktime',    '.mov')
+mimetypes.add_type('video/x-msvideo',   '.avi')
+mimetypes.add_type('video/x-matroska',  '.mkv')
+mimetypes.add_type('audio/mpeg',         '.mp3')
+mimetypes.add_type('audio/mp4',          '.m4a')
+mimetypes.add_type('audio/ogg',          '.ogg')
+mimetypes.add_type('audio/wav',          '.wav')
+mimetypes.add_type('audio/aac',          '.aac')
 
 # Custom User Model
 AUTH_USER_MODEL = 'accounts.CustomUser'
@@ -159,13 +190,50 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 # Login/Logout redirects
 LOGIN_REDIRECT_URL = 'dashboard'
 LOGOUT_REDIRECT_URL = 'home'
+
+# Django Channels Configuration
+ASGI_APPLICATION = 'peer_skill_swap.asgi.application'
+
+if DEBUG:
+    CHANNEL_LAYERS = {
+        'default': {
+            'BACKEND': 'channels.layers.InMemoryChannelLayer',
+        },
+    }
+else:
+    CHANNEL_LAYERS = {
+        'default': {
+            'BACKEND': 'channels_redis.core.RedisChannelLayer',
+            'CONFIG': {
+                'hosts': [config('REDIS_URL', default='redis://localhost:6379')],
+            },
+        },
+    }
 LOGIN_URL = 'login'
 
-# Security Settings for Production
+# OpenAI API key for AI features
+OPENAI_API_KEY = config('OPENAI_API_KEY', default='')
+OPENAI_MODEL = config('OPENAI_MODEL', default='gpt-4o-mini')
+OPENAI_TIMEOUT = config('OPENAI_TIMEOUT', default=25, cast=int)
+import os
+os.environ.setdefault('OPENAI_API_KEY', OPENAI_API_KEY)
+
+# Security Settings (auto-enabled in production when DEBUG=False)
 SECURE_SSL_REDIRECT = not DEBUG
 SESSION_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_SECURE = not DEBUG
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SECURE_BROWSER_XSS_FILTER = True
-SECURE_CONTENT_SECURITY_POLICY = {
-    "default-src": ("'self'",),
-}
+SECURE_HSTS_SECONDS = 31536000 if not DEBUG else 0
+SECURE_HSTS_INCLUDE_SUBDOMAINS = not DEBUG
+SECURE_HSTS_PRELOAD = not DEBUG
+
+# Silence deployment-check warnings that are already handled via not-DEBUG conditions
+if DEBUG:
+    SILENCED_SYSTEM_CHECKS = [
+        'security.W004',   # HSTS seconds: intentionally 0 in dev
+        'security.W008',   # SSL redirect: handled by not DEBUG
+        'security.W012',   # SESSION_COOKIE_SECURE: handled by not DEBUG
+        'security.W016',   # CSRF_COOKIE_SECURE: handled by not DEBUG
+        'security.W018',   # DEBUG=True: expected in development
+    ]
